@@ -68,6 +68,15 @@ a{color:inherit}
 .tab[aria-selected="true"] .cnt{background:rgba(255,255,255,.28);color:#fff}
 .tab:focus-visible,.clearbtn:focus-visible,.copybtn:focus-visible,.src:focus-visible,.backbtn:focus-visible,.chara-link:focus-visible,.tabbtn:focus-visible,.ebtn:focus-visible,.addbtn:focus-visible,.bigbtn:focus-visible{outline:3px solid #ffd166;outline-offset:2px}
 
+/* chapter range switch */
+.chapterbar{margin:16px 0 0;background:var(--card);border:2px solid var(--line-soft);border-radius:14px;padding:12px 14px;box-shadow:var(--shadow)}
+.chapterbar .ch-label{font-family:"M PLUS Rounded 1c",sans-serif;font-weight:800;font-size:13px;color:var(--accent-deep);margin:0 0 8px;letter-spacing:.03em}
+.chapter-switch{display:flex;gap:8px;flex-wrap:wrap}
+.chapter-btn{flex:1;min-width:130px;appearance:none;border:2px solid var(--line);background:#fff;color:var(--ink2);border-radius:999px;padding:10px 14px;min-height:48px;font-size:14px;font-weight:800;cursor:pointer;font-family:"M PLUS Rounded 1c",sans-serif}
+.chapter-btn[aria-selected="true"]{background:var(--accent-deep);border-color:var(--accent-deep);color:#fff}
+.chapter-note{margin:8px 2px 0;font-size:12px;color:var(--ink2);line-height:1.6}
+.export-area{width:100%;min-height:180px;border:2px solid var(--line);border-radius:12px;padding:10px 12px;font-size:12px;line-height:1.6;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--ink);background:#fff;white-space:pre-wrap;word-break:break-all}
+
 /* sections / cards */
 .catnote{margin:14px 2px 0;font-size:13.5px;color:var(--ink2);background:var(--card2);border:2px dashed var(--line);border-radius:12px;padding:10px 14px}
 .cards{display:grid;grid-template-columns:1fr;gap:14px;margin-top:16px}
@@ -192,12 +201,28 @@ footer a{color:var(--accent-deep)}
 
 <!-- 資料室ビュー -->
 <section id="viewBrowse">
+<div class="chapterbar" aria-label="表示範囲の切り替え">
+<p class="ch-label">📖 表示範囲</p>
+<div class="chapter-switch" role="tablist" aria-label="章の範囲">
+<button type="button" class="chapter-btn" data-chapter="1" aria-selected="true">第一章まで</button>
+<button type="button" class="chapter-btn" data-chapter="2" aria-selected="false">第二章まで</button>
+</div>
+<p class="chapter-note" data-chapter-note>現在は第一章のデータのみ収録しています。「第二章まで」を選んでも、今は表示は同じです。第二章のデータが追加されると、ここで切り替えられるようになります。</p>
+</div>
 <nav class="tabs" id="tabs" aria-label="分類"></nav>
 <div id="content"></div>
 </section>
 
 <!-- 検索ビュー -->
 <section id="viewSearch" hidden>
+<div class="chapterbar" aria-label="表示範囲の切り替え（検索）">
+<p class="ch-label">📖 表示範囲（検索もこの範囲内です）</p>
+<div class="chapter-switch" role="tablist" aria-label="章の範囲（検索）">
+<button type="button" class="chapter-btn" data-chapter="1" aria-selected="true">第一章まで</button>
+<button type="button" class="chapter-btn" data-chapter="2" aria-selected="false">第二章まで</button>
+</div>
+<p class="chapter-note" data-chapter-note>現在は第一章のデータのみ収録しています。「第二章まで」を選んでも、今は表示は同じです。</p>
+</div>
 <div class="searchbar">
 <div class="searchbox">
 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.8-3.8"/></svg>
@@ -215,8 +240,18 @@ footer a{color:var(--accent-deep)}
 <h2>✏️ 編集モード</h2>
 <p>ここで加えた編集は、この端末のブラウザにだけ保存されます（ページの初期データそのものは書き換わりません）。項目や事実の追加・変更・削除ができます。</p>
 <div class="row">
+<button type="button" class="bigbtn primary" id="exportBtn">📤 データを書き出す</button>
 <button type="button" class="bigbtn danger" id="resetBtn">編集をリセット</button>
 </div>
+<p style="margin-top:10px">「データを書き出す」を押すと、今の全データ（あなたの編集を反映したもの）をJSONでコピーできます。そのJSONをチャットで送ってもらえれば、こちらで続きを編集して新しい版として戻せます。</p>
+</div>
+<div class="chapterbar" aria-label="表示範囲の切り替え（編集）">
+<p class="ch-label">📖 表示範囲（編集もこの範囲に連動します）</p>
+<div class="chapter-switch" role="tablist" aria-label="章の範囲（編集）">
+<button type="button" class="chapter-btn" data-chapter="1" aria-selected="true">第一章まで</button>
+<button type="button" class="chapter-btn" data-chapter="2" aria-selected="false">第二章まで</button>
+</div>
+<p class="chapter-note" data-chapter-note>現在は第一章のデータのみ収録しています。「第二章まで」を選んでも、今は表示は同じです。</p>
 </div>
 <nav class="tabs" id="tabsEdit" aria-label="分類（編集）"></nav>
 <div id="editContent"></div>
@@ -248,6 +283,9 @@ footer a{color:var(--accent-deep)}
 
 <script>
 "use strict";
+var SEED_DATA_VERSION = 1;
+var DATA_VERSION = SEED_DATA_VERSION;
+var displayChapter = 1; /* 1 = 第一章まで, 2 = 第二章まで */
 var SRC = function(n){ return "https://ncode.syosetu.com/n1049md/" + n + "/";};
 function epLabel(n){ return n === 1 ? "プロローグ" : "第" + (n - 1) + "話";}
 
@@ -266,12 +304,12 @@ for(var k in RUBY){ if(ability.indexOf(k) >= 0 && (!best || k.length > best.leng
 return best;
 }
 
-function F(t, s){ return { t: t, s: s || []};}
+function F(t, s, ch){ return { t: t, s: s || [], chapter: (ch || 1) };}
 
 /* ---------- シードデータ（初期データ） ---------- */
 var SEC_ORDER = ["基本情報","初出一覧","外見","性格・内面","嗜好","来歴","人間関係","能力","作中変化","目標","伏線・秘密"];
 function CH(name, badge, secs){
-return { name:name, badge:badge, sections: SEC_ORDER.map(function(h){
+return { name:name, badge:badge, chapter:1, sections: SEC_ORDER.map(function(h){
 return { h:h, facts: secs[h] || [F("第一章では未出")]};
 })};
 }
@@ -869,32 +907,43 @@ var EPISODES = [
 /* ---------- ID付け（シード） ---------- */
 (function assignSeedIds(){
 CHARAS.forEach(function(ch, i){
-ch._id = "chara:" + i;
+ch._id = "chara:" + i; if(ch.chapter == null) ch.chapter = 1;
 ch.sections.forEach(function(sec){
-sec.facts.forEach(function(f, j){ f._id = ch._id + "|" + sec.h + "|" + j; f._seed = true;});
+sec.facts.forEach(function(f, j){ f._id = ch._id + "|" + sec.h + "|" + j; f._seed = true; if(f.chapter == null) f.chapter = 1; });
 });
 });
 CATS.forEach(function(cat){
 cat.items.forEach(function(item, i){
-item._id = cat.id + ":" + i;
-if(item.facts) item.facts.forEach(function(f, j){ f._id = item._id + "|facts|" + j; f._seed = true;});
-if(item.basic) item.basic.forEach(function(f, j){ f._id = item._id + "|basic|" + j; f._seed = true;});
-if(item.feat) item.feat.forEach(function(f, j){ f._id = item._id + "|feat|" + j; f._seed = true;});
-if(item.timeline) item.timeline.forEach(function(r, j){ r._id = item._id + "|timeline|" + j; r._seed = true;});
+item._id = cat.id + ":" + i; if(item.chapter == null) item.chapter = 1;
+if(item.facts) item.facts.forEach(function(f, j){ f._id = item._id + "|facts|" + j; f._seed = true; if(f.chapter == null) f.chapter = 1; });
+if(item.basic) item.basic.forEach(function(f, j){ f._id = item._id + "|basic|" + j; f._seed = true; if(f.chapter == null) f.chapter = 1; });
+if(item.feat) item.feat.forEach(function(f, j){ f._id = item._id + "|feat|" + j; f._seed = true; if(f.chapter == null) f.chapter = 1; });
+if(item.timeline) item.timeline.forEach(function(r, j){ r._id = item._id + "|timeline|" + j; r._seed = true; if(r.chapter == null) r.chapter = 1; r.t = r.what; });
 });
 });
 })();
 
 /* ---------- 編集差分（localStorage） ---------- */
 var LS_KEY = "hapirori-ledger-overrides-v1";
-function emptyOvr(){ return { factEdit:{}, factDel:{}, factAdd:{}, itemEdit:{}, itemDel:{}, itemAdd:[] };}
+function emptyOvr(){ return { baseVersion: SEED_DATA_VERSION, factEdit:{}, factDel:{}, factAdd:{}, itemEdit:{}, itemDel:{}, itemAdd:[] };}
 var ovr = emptyOvr();
 var lsOK = true;
+var dataUpdatedNotice = false;
 try {
 var raw = window.localStorage.getItem(LS_KEY);
-if(raw){ var parsed = JSON.parse(raw); if(parsed && typeof parsed === "object"){ ovr = Object.assign(emptyOvr(), parsed); } }
+if(raw){ var parsed = JSON.parse(raw); if(parsed && typeof parsed === "object"){
+var bv = (parsed.baseVersion == null ? 1 : parsed.baseVersion);
+if(bv !== SEED_DATA_VERSION){
+/* 新しいシードに取り込み済みとみなして古い差分を破棄する */
+ovr = emptyOvr(); dataUpdatedNotice = true;
+try { window.localStorage.removeItem(LS_KEY); } catch(e2){}
+} else {
+ovr = Object.assign(emptyOvr(), parsed); ovr.baseVersion = SEED_DATA_VERSION;
+}
+} }
 } catch(e){ lsOK = false; }
 function saveOvr(){
+ovr.baseVersion = SEED_DATA_VERSION;
 try { window.localStorage.setItem(LS_KEY, JSON.stringify(ovr)); }
 catch(e){ lsOK = false; showToast("保存できませんでした（ブラウザの保存領域が使えません）"); }
 }
@@ -906,18 +955,38 @@ var DATA = null;      /* { cats:[...], charas:[...] } */
 var FACT_INDEX = {};  /* fid -> {fact, ownerKey, item} */
 var ITEM_INDEX = {};  /* iid -> {item, cat} */
 
-function cloneFact(f){ var c = { t:f.t, s:(f.s||[]).slice(), _id:f._id, _seed:!!f._seed }; if(f.when !== undefined) c.when = f.when; if(f._edited) c._edited = true; return c; }
+function cloneFact(f){ var c = { t:f.t, s:(f.s||[]).slice(), _id:f._id, _seed:!!f._seed, chapter:(f.chapter == null ? 1 : f.chapter) }; if(f.when !== undefined) c.when = f.when; if(f.what !== undefined && f.t == null) c.t = f.what; if(f._edited) c._edited = true; return c; }
+function factChapter(f){ return (f && f.chapter != null) ? f.chapter : 1; }
+function isFactVisible(f){ return factChapter(f) <= displayChapter; }
+function visibleFacts(list){ return (list || []).filter(isFactVisible); }
+function factDisplayText(f){ var t = (f && f.t) || ""; if(displayChapter === 2){ t = t.replace(/第一章では未出/g, "第二章では未出"); } return t; }
+function chapterRangeLabel(){ return displayChapter === 2 ? "第二章まで" : "第一章"; }
+function itemChapter(it){ return (it && it.chapter != null) ? it.chapter : 1; }
+function itemHasVisibleFacts(it){
+if(!it) return false;
+if(itemChapter(it) > displayChapter) return false;
+if(it.sections){ return it.sections.some(function(sec){ return visibleFacts(sec.facts).length > 0; }); }
+if(it.timeline) return visibleFacts(it.timeline).length > 0;
+if(it.facts) return visibleFacts(it.facts).length > 0;
+if(it.basic || it.feat) return visibleFacts(it.basic).length + visibleFacts(it.feat).length > 0;
+return true;
+}
+function isItemVisible(it){ 
+if(itemChapter(it) > displayChapter) return false;
+/* 事実が0件になった項目は出さない。ただし編集モードでは追加できるよう空でも出す場合があるため、呼び出し側で edit を考慮する */
+return itemHasVisibleFacts(it);
+}
 
 function applyToFactList(list, ownerKey, item){
 var out = [];
 (list || []).forEach(function(f){
 if(ovr.factDel[f._id]) return; /* 削除済みマーク：復活させない */
 var c = cloneFact(f);
-if(ovr.factEdit[f._id]){ var e = ovr.factEdit[f._id]; c.t = e.t; c.s = (e.s||[]).slice(); if(e.when !== undefined) c.when = e.when; c._edited = true; }
+if(ovr.factEdit[f._id]){ var e = ovr.factEdit[f._id]; c.t = e.t; c.s = (e.s||[]).slice(); if(e.when !== undefined) c.when = e.when; if(e.chapter != null) c.chapter = e.chapter; c._edited = true; }
 out.push(c);
 });
 (ovr.factAdd[ownerKey] || []).forEach(function(f){
-var c = cloneFact(f); c._seed = false;
+var c = cloneFact(f); c._seed = false; if(c.chapter == null) c.chapter = 1;
 out.push(c);
 });
 out.forEach(function(f){ FACT_INDEX[f._id] = { fact:f, ownerKey:ownerKey, item:item }; });
@@ -929,7 +998,7 @@ FACT_INDEX = {}; ITEM_INDEX = {};
 var charas = [];
 CHARAS.forEach(function(seedCh){
 if(ovr.itemDel[seedCh._id]) return;
-var ch = { _id:seedCh._id, name:seedCh.name, badge:Object.assign({}, seedCh.badge), _seed:true,
+var ch = { _id:seedCh._id, name:seedCh.name, badge:Object.assign({}, seedCh.badge), _seed:true, chapter:(seedCh.chapter == null ? 1 : seedCh.chapter),
 sections: seedCh.sections.map(function(sec){ return { h:sec.h, facts:[] }; }) };
 var ie = ovr.itemEdit[seedCh._id];
 if(ie){ if(ie.title) ch.name = ie.title; if(ie.badge) ch.badge = Object.assign({}, ie.badge); if(ie.title || ie.badge) ch._edited = true; }
@@ -938,7 +1007,7 @@ charas.push(ch); ITEM_INDEX[ch._id] = { item:ch, cat:null };
 });
 ovr.itemAdd.forEach(function(ai){
 if(ai.cat !== "chara") return;
-var ch = { _id:ai.id, name:ai.title, badge:Object.assign({type:"未出",cls:"未出",rank:"未出",ability:"未出"}, ai.badge || {}), _seed:false,
+var ch = { _id:ai.id, name:ai.title, badge:Object.assign({type:"未出",cls:"未出",rank:"未出",ability:"未出"}, ai.badge || {}), _seed:false, chapter:(ai.chapter == null ? 1 : ai.chapter),
 sections: SEC_ORDER.map(function(h){ return { h:h, facts:[] }; }) };
 ch.sections.forEach(function(sec){ sec.facts = applyToFactList([], ch._id + "|" + sec.h, ch); });
 charas.push(ch); ITEM_INDEX[ch._id] = { item:ch, cat:null };
@@ -948,11 +1017,11 @@ var cats = CATS.map(function(seedCat){
 var cat = { id:seedCat.id, icon:seedCat.icon, name:seedCat.name, kind:seedCat.kind, note:seedCat.note, synopsis:seedCat.synopsis, items:[] };
 if(seedCat.kind === "chara"){ cat.items = charas; charas.forEach(function(ch){ ITEM_INDEX[ch._id].cat = cat; }); return cat; }
 if(seedCat.synopsis){
-var overall = { _id:"synopsis:overall", title:"第一章全体", wide:true, plain:true, _seed:true,
-facts: applyToFactList([{ t:SYNOPSIS_OVERALL, s:[], _id:"synopsis:overall|facts|0", _seed:true }], "synopsis:overall|facts", null) };
+var overall = { _id:"synopsis:overall", title:"第一章全体", wide:true, plain:true, _seed:true, chapter:1,
+facts: applyToFactList([{ t:SYNOPSIS_OVERALL, s:[], _id:"synopsis:overall|facts|0", _seed:true, chapter:1 }], "synopsis:overall|facts", null) };
 overall.facts.forEach(function(f){ FACT_INDEX[f._id].item = overall; });
-var eps = { _id:"synopsis:episodes", title:"話ごと", wide:true, episodes:true, _seed:true,
-facts: applyToFactList(EPISODES.map(function(ep, j){ return { t:ep[1], s:[ep[0]], _id:"synopsis:episodes|facts|" + j, _seed:true }; }), "synopsis:episodes|facts", null) };
+var eps = { _id:"synopsis:episodes", title:"話ごと", wide:true, episodes:true, _seed:true, chapter:1,
+facts: applyToFactList(EPISODES.map(function(ep, j){ return { t:ep[1], s:[ep[0]], _id:"synopsis:episodes|facts|" + j, _seed:true, chapter:1 }; }), "synopsis:episodes|facts", null) };
 eps.facts.forEach(function(f){ FACT_INDEX[f._id].item = eps; });
 cat.items = [overall, eps];
 cat.items.forEach(function(it){ ITEM_INDEX[it._id] = { item:it, cat:cat }; });
@@ -960,7 +1029,7 @@ return cat;
 }
 seedCat.items.forEach(function(seedItem){
 if(ovr.itemDel[seedItem._id]) return;
-var item = { _id:seedItem._id, title:seedItem.title, wide:seedItem.wide, ruby:seedItem.ruby, _seed:true };
+var item = { _id:seedItem._id, title:seedItem.title, wide:seedItem.wide, ruby:seedItem.ruby, _seed:true, chapter:(seedItem.chapter == null ? 1 : seedItem.chapter) };
 var ie = ovr.itemEdit[seedItem._id];
 if(ie){
 if(ie.title){ item.title = ie.title; item._edited = true; }
@@ -975,8 +1044,8 @@ if(seedItem.timeline){
 item.timeline = [];
 seedItem.timeline.forEach(function(r){
 if(ovr.factDel[r._id]) return;
-var c = { when:r.when, t:r.what, s:(r.s||[]).slice(), _id:r._id, _seed:true };
-if(ovr.factEdit[r._id]){ var e = ovr.factEdit[r._id]; c.t = e.t; c.s = (e.s||[]).slice(); if(e.when !== undefined) c.when = e.when; c._edited = true; }
+var c = { when:r.when, t:(r.t || r.what), s:(r.s||[]).slice(), _id:r._id, _seed:true, chapter:(r.chapter == null ? 1 : r.chapter) };
+if(ovr.factEdit[r._id]){ var e = ovr.factEdit[r._id]; c.t = e.t; c.s = (e.s||[]).slice(); if(e.when !== undefined) c.when = e.when; if(e.chapter != null) c.chapter = e.chapter; c._edited = true; }
 item.timeline.push(c);
 });
 (ovr.factAdd[item._id + "|timeline"] || []).forEach(function(f){ var c = cloneFact(f); c._seed = false; item.timeline.push(c); });
@@ -986,7 +1055,7 @@ cat.items.push(item); ITEM_INDEX[item._id] = { item:item, cat:cat };
 });
 ovr.itemAdd.forEach(function(ai){
 if(ai.cat !== seedCat.id) return;
-var item = { _id:ai.id, title:ai.title, _seed:false };
+var item = { _id:ai.id, title:ai.title, _seed:false, chapter:(ai.chapter == null ? 1 : ai.chapter) };
 if(seedCat.kind === "term"){ item.debut = ai.debut || ""; item.debutSrc = ai.debutSrc || []; }
 if(seedCat.kind === "country"){
 item.basic = applyToFactList([], item._id + "|basic", item);
@@ -1023,8 +1092,9 @@ return '<span class="facttools"><button type="button" class="ebtn" data-act="edi
 + '<button type="button" class="ebtn danger" data-act="del-fact" data-fid="' + esc(f._id) + '">削除</button></span>';
 }
 function factLis(facts, edit){
-return '<ul>' + facts.map(function(f){
-return '<li><p>' + esc(f.t) + '</p>' + srcBtns(f.s) + marks(f) + (edit ? factTools(f) : '') + '</li>';
+var list = visibleFacts(facts);
+return '<ul>' + list.map(function(f){
+return '<li><p>' + esc(factDisplayText(f)) + '</p>' + srcBtns(f.s) + marks(f) + (edit ? factTools(f) : '') + '</li>';
 }).join("") + '</ul>';
 }
 function addFactBtn(ownerKey, label){
@@ -1064,19 +1134,19 @@ if(edit) h += itemTools(item);
 if(item.ruby) h += copyRow(item.ruby);
 if(item.timeline){
 h += '<ul class="tl">';
-item.timeline.forEach(function(r){
-h += '<li><span class="when">' + esc(r.when || "") + '</span><span class="what"><p>' + esc(r.t) + '</p>' + srcBtns(r.s) + marks(r) + (edit ? factTools(r) : '') + '</span></li>';
+visibleFacts(item.timeline).forEach(function(r){
+h += '<li><span class="when">' + esc(r.when || "") + '</span><span class="what"><p>' + esc(factDisplayText(r)) + '</p>' + srcBtns(r.s) + marks(r) + (edit ? factTools(r) : '') + '</span></li>';
 });
 h += '</ul>';
 if(edit) h += addFactBtn(item._id + "|timeline", "出来事を追加");
 } else if(item.plain){
-item.facts.forEach(function(f){ h += '<p class="overall">' + esc(f.t) + '</p>' + marks(f) + (edit ? '<div>' + factTools(f) + '</div>' : ''); });
+visibleFacts(item.facts).forEach(function(f){ h += '<p class="overall">' + esc(factDisplayText(f)) + '</p>' + marks(f) + (edit ? '<div>' + factTools(f) + '</div>' : ''); });
 } else if(item.episodes){
 h += '<ul class="ep-list">';
-item.facts.forEach(function(f){
+visibleFacts(item.facts).forEach(function(f){
 var n = (f.s && f.s[0]) || 0;
 var label = n ? epLabel(n) + (n === 33 ? "（第一章 完）" : "") : "話";
-h += '<li><span class="ep-no">' + (n ? '<a class="src" href="' + SRC(n) + '" target="_blank" rel="noopener">' + esc(epLabel(n)) + '</a>' : '') + '</span><p><span class="ep-title">' + esc(label) + '：</span>' + esc(f.t) + marks(f) + (edit ? factTools(f) : '') + '</p></li>';
+h += '<li><span class="ep-no">' + (n ? '<a class="src" href="' + SRC(n) + '" target="_blank" rel="noopener">' + esc(epLabel(n)) + '</a>' : '') + '</span><p><span class="ep-title">' + esc(label) + '：</span>' + esc(factDisplayText(f)) + marks(f) + (edit ? factTools(f) : '') + '</p></li>';
 });
 h += '</ul>';
 if(edit) h += addFactBtn(item._id + "|facts", "あらすじを追加");
@@ -1118,12 +1188,21 @@ ch.sections.forEach(function(sec){
 var facts = sec.facts;
 if(q){
 if(ch.name.toLowerCase().indexOf(q) < 0){ facts = facts.filter(function(f){ return f.t.toLowerCase().indexOf(q) >= 0; }); }
+facts = visibleFacts(facts);
 if(!facts.length && !edit) return;
+} else {
+facts = visibleFacts(facts);
 }
 any = true;
 h += '<h4 class="subhead">' + esc(sec.h) + '</h4>';
 if(sec.h === "能力") h += badgeRow(ch.badge);
-h += factLis(facts, edit);
+if(!facts.length && !edit){
+h += '<ul><li><p>' + esc((displayChapter === 2 ? "第二章" : "第一章") + "では未出") + '</p></li></ul>';
+} else if(!facts.length && edit){
+h += '<ul><li><p>' + esc((displayChapter === 2 ? "第二章" : "第一章") + "では未出") + '</p></li></ul>';
+} else {
+h += factLis(q ? facts : sec.facts, edit);
+}
 if(edit) h += addFactBtn(ch._id + "|" + sec.h);
 });
 h += '</article>';
@@ -1134,7 +1213,20 @@ if(cat.kind === "country") return countryHTML(cat, item, showCat, edit);
 if(cat.kind === "term") return termHTML(cat, item, showCat, edit);
 return cardHTML(cat, item, showCat, edit);
 }
-function countOf(cat){ return cat.items.length; }
+function countOf(cat, forEdit){ if(forEdit) return cat.items.length; return cat.items.filter(function(it){ return isItemVisible(it); }).length; }
+function syncChapterUI(){
+document.querySelectorAll(".chapter-btn").forEach(function(b){
+var ch = parseInt(b.getAttribute("data-chapter"), 10);
+b.setAttribute("aria-selected", ch === displayChapter ? "true" : "false");
+});
+document.querySelectorAll("[data-chapter-note]").forEach(function(el){
+if(displayChapter === 2){
+el.textContent = "表示範囲：第二章まで（現在は第一章のデータのみのため、表示は第一章までと同じです）";
+} else {
+el.textContent = "表示範囲：第一章まで ― 現在は第一章のデータのみ収録しています。「第二章まで」を選んでも、今は表示は同じです。第二章のデータが追加されると、ここで切り替えられるようになります。";
+}
+});
+}
 
 /* ---------- 画面状態と描画 ---------- */
 var view = "browse";           /* browse | search | edit */
@@ -1158,7 +1250,7 @@ DATA.cats.forEach(function(cat){
 var b = document.createElement("button");
 b.type = "button"; b.className = "tab"; b.dataset.id = cat.id; b.dataset.mode = mode;
 b.setAttribute("aria-selected", cat.id === current ? "true" : "false");
-b.innerHTML = esc(cat.icon) + " " + esc(cat.name) + ' <span class="cnt">' + countOf(cat) + '</span>';
+b.innerHTML = esc(cat.icon) + " " + esc(cat.name) + ' <span class="cnt">' + countOf(cat, mode === "edit") + '</span>';
 el.appendChild(b);
 });
 }
@@ -1181,6 +1273,8 @@ return h;
 }
 h += '<div class="cards">';
 cat.items.forEach(function(ch){
+if(!edit && !isItemVisible(ch)) return;
+if(edit && itemChapter(ch) > displayChapter) return;
 h += '<button type="button" class="card chara-link" data-chara="' + esc(ch._id) + '">'
 + '<span class="chara-link-name">' + esc(ch.name) + itemMarks(ch) + '</span>'
 + '<span class="chara-link-meta">TYPE ' + esc(ch.badge.type) + '／RANK ' + esc(ch.badge.rank) + '／能力 ' + esc(ch.badge.ability) + '</span>'
@@ -1190,12 +1284,16 @@ h += '</div>';
 if(edit) h += '<button type="button" class="addbtn" data-act="add-item" data-cat="chara">＋ キャラを追加</button>';
 return h;
 }
-h += '<div class="cards">' + cat.items.map(function(it){ return itemCard(cat, it, false, edit); }).join("") + '</div>';
+var visibleItems = edit ? cat.items.filter(function(it){ return itemChapter(it) <= displayChapter; }) : cat.items.filter(function(it){ return isItemVisible(it); });
+/* あらすじ・年表など facts が特殊な項目は常に表示（中身は visibleFacts で絞る） */
+if(cat.synopsis || cat.id === "timeline"){ visibleItems = cat.items.filter(function(it){ return itemChapter(it) <= displayChapter; }); }
+h += '<div class="cards">' + visibleItems.map(function(it){ return itemCard(cat, it, false, edit); }).join("") + '</div>';
 if(edit) h += '<button type="button" class="addbtn" data-act="add-item" data-cat="' + esc(cat.id) + '">＋ 項目を追加（' + esc(cat.name) + '）</button>';
 return h;
 }
 
 function render(){
+syncChapterUI();
 buildTabs(tabsEl, activeId, "browse");
 buildTabs(tabsEditEl, editActiveId, "edit");
 contentEl.innerHTML = categoryHTML(activeId, false, activeChara);
@@ -1209,32 +1307,34 @@ var hits = 0, html = "";
 DATA.cats.forEach(function(cat){
 if(cat.kind === "chara"){
 cat.items.forEach(function(ch){
+if(itemChapter(ch) > displayChapter) return;
 var inName = ch.name.toLowerCase().indexOf(q) >= 0;
-var inFacts = ch.sections.some(function(sec){ return sec.facts.some(function(f){ return f.t.toLowerCase().indexOf(q) >= 0; }); });
+var inFacts = ch.sections.some(function(sec){ return visibleFacts(sec.facts).some(function(f){ return f.t.toLowerCase().indexOf(q) >= 0; }); });
 if(inName || inFacts){ var page = charaPageHTML(ch, true, false, q); if(page){ hits++; html += page; } }
 });
 return;
 }
 cat.items.forEach(function(item){
+if(itemChapter(item) > displayChapter) return;
 var inTitle = (item.title || "").toLowerCase().indexOf(q) >= 0;
-function filt(list){ return inTitle ? list : (list || []).filter(function(f){ return f.t.toLowerCase().indexOf(q) >= 0; }); }
+function filt(list){ var vis = visibleFacts(list); return inTitle ? vis : vis.filter(function(f){ return f.t.toLowerCase().indexOf(q) >= 0; }); }
 if(cat.kind === "country"){
 var b = filt(item.basic), f2 = filt(item.feat);
-if(inTitle || b.length || f2.length){ hits++; html += countryHTML(cat, Object.assign({}, item, { basic:b, feat:f2 }), true, false); }
+if(b.length || f2.length){ hits++; html += countryHTML(cat, Object.assign({}, item, { basic:b, feat:f2 }), true, false); }
 return;
 }
 if(cat.kind === "term"){
 var tf = filt(item.facts);
-if(inTitle || tf.length){ hits++; html += termHTML(cat, Object.assign({}, item, { facts:tf }), true, false); }
+if(tf.length){ hits++; html += termHTML(cat, Object.assign({}, item, { facts:tf }), true, false); }
 return;
 }
 if(item.timeline){
-var rows = item.timeline.filter(function(r){ return inTitle || ((r.when || "") + " " + r.t).toLowerCase().indexOf(q) >= 0; });
-if(inTitle || rows.length){ hits++; html += cardHTML(cat, Object.assign({}, item, { timeline: inTitle ? item.timeline : rows }), true, false); }
+var rows = visibleFacts(item.timeline).filter(function(r){ return inTitle || ((r.when || "") + " " + r.t).toLowerCase().indexOf(q) >= 0; });
+if(rows.length){ hits++; html += cardHTML(cat, Object.assign({}, item, { timeline: rows }), true, false); }
 return;
 }
 var ff = filt(item.facts);
-if(inTitle || ff.length){ hits++; html += cardHTML(cat, Object.assign({}, item, { facts:ff }), true, false); }
+if(ff.length){ hits++; html += cardHTML(cat, Object.assign({}, item, { facts:ff }), true, false); }
 });
 });
 searchContentEl.innerHTML = hits ? '<div class="cards">' + html + '</div>' : '<div class="empty">「' + esc(qEl.value.trim()) + '」に一致する項目はありませんでした。</div>';
@@ -1304,7 +1404,7 @@ document.getElementById("fCancel").addEventListener("click", closeSheet);
 document.getElementById("fSave").addEventListener("click", function(){
 var t = document.getElementById("fText").value.trim();
 if(!t){ showToast("内容が空です"); return; }
-var data = { t:t, s:parseSrc(document.getElementById("fSrc").value) };
+var data = { t:t, s:parseSrc(document.getElementById("fSrc").value), chapter: factChapter(f) };
 if(isTl) data.when = document.getElementById("fWhen").value.trim();
 saveFactEdit(fid, data);
 closeSheet(); rebuild(); showToast("保存しました");
@@ -1326,7 +1426,7 @@ document.getElementById("fCancel").addEventListener("click", closeSheet);
 document.getElementById("fSave").addEventListener("click", function(){
 var t = document.getElementById("fText").value.trim();
 if(!t){ showToast("内容が空です"); return; }
-var nf = { _id:newId(), t:t, s:parseSrc(document.getElementById("fSrc").value), _seed:false };
+var nf = { _id:newId(), t:t, s:parseSrc(document.getElementById("fSrc").value), _seed:false, chapter: displayChapter };
 if(isTl) nf.when = document.getElementById("fWhen").value.trim();
 if(!ovr.factAdd[ownerKey]) ovr.factAdd[ownerKey] = [];
 ovr.factAdd[ownerKey].push(nf);
@@ -1337,7 +1437,7 @@ function saveFactEdit(fid, data){
 var rec = FACT_INDEX[fid];
 if(rec && !rec.fact._seed){
 var list = ovr.factAdd[rec.ownerKey] || [];
-for(var i = 0; i < list.length; i++){ if(list[i]._id === fid){ list[i].t = data.t; list[i].s = data.s; if(data.when !== undefined) list[i].when = data.when; break; } }
+for(var i = 0; i < list.length; i++){ if(list[i]._id === fid){ list[i].t = data.t; list[i].s = data.s; if(data.when !== undefined) list[i].when = data.when; if(data.chapter != null) list[i].chapter = data.chapter; break; } }
 } else {
 ovr.factEdit[fid] = data;
 }
@@ -1433,7 +1533,7 @@ document.getElementById("iSave").addEventListener("click", function(){
 var nt = document.getElementById("iTitle").value.trim();
 if(!nt){ showToast("名前が空です"); return; }
 function gv(id){ var el = document.getElementById(id); return el ? el.value.trim() : ""; }
-var ai = { id:newId(), cat:catId, title:nt };
+var ai = { id:newId(), cat:catId, title:nt, chapter: displayChapter };
 if(isChara) ai.badge = { type:gv("iType") || "未出", cls:gv("iCls") || "未出", rank:gv("iRank") || "未出", ability:gv("iAbility") || "未出" };
 if(cat && cat.kind === "term"){ ai.debut = gv("iDebut"); ai.debutSrc = parseSrc(gv("iDebutSrc")); }
 ovr.itemAdd.push(ai);
@@ -1499,6 +1599,108 @@ rebuild(); showToast("初期状態に戻しました");
 
 function rebuild(){ buildData(); render(); }
 
+/* ---------- 章切り替え ---------- */
+document.addEventListener("click", function(e){
+var b = e.target.closest ? e.target.closest(".chapter-btn") : null;
+if(!b) return;
+var ch = parseInt(b.getAttribute("data-chapter"), 10);
+if(ch === 1 || ch === 2){ displayChapter = ch; render(); }
+});
+
+/* ---------- データ書き出し ---------- */
+function cleanFactForExport(f){
+var o = { t: factDisplayText ? f.t : f.t, s: (f.s || []).slice(), chapter: factChapter(f) };
+/* 書き出しでは表示用の置換はしない（元の文をそのまま） */
+o.t = f.t;
+if(f.when !== undefined) o.when = f.when;
+if(f.what !== undefined && f.when !== undefined && !f.t) o.t = f.what;
+return o;
+}
+function buildExportData(){
+var exportedAt = new Date().toISOString();
+var charasOut = DATA.charas.map(function(ch){
+return {
+name: ch.name, chapter: itemChapter(ch), badge: Object.assign({}, ch.badge),
+sections: ch.sections.map(function(sec){ return { h: sec.h, facts: sec.facts.map(cleanFactForExport) }; })
+};
+});
+var catsOut = DATA.cats.map(function(cat){
+var co = { id: cat.id, icon: cat.icon, name: cat.name };
+if(cat.kind) co.kind = cat.kind;
+if(cat.note) co.note = cat.note;
+if(cat.synopsis) co.synopsis = true;
+if(cat.kind === "chara"){ co.items = []; return co; }
+co.items = cat.items.map(function(item){
+var io = { title: item.title || item.name || "", chapter: itemChapter(item) };
+if(item.wide) io.wide = true;
+if(item.ruby) io.ruby = item.ruby;
+if(item.debut !== undefined){ io.debut = item.debut; io.debutSrc = (item.debutSrc || []).slice(); }
+if(item.facts) io.facts = item.facts.map(cleanFactForExport);
+if(item.basic) io.basic = item.basic.map(cleanFactForExport);
+if(item.feat) io.feat = item.feat.map(cleanFactForExport);
+if(item.timeline) io.timeline = item.timeline.map(function(r){ return { when: r.when || "", what: r.t, t: r.t, s: (r.s || []).slice(), chapter: factChapter(r) }; });
+if(item.plain) io.plain = true;
+if(item.episodes) io.episodes = true;
+return io;
+});
+return co;
+});
+return {
+app: "ハピロリ設定資料室",
+dataVersion: SEED_DATA_VERSION,
+baseVersion: SEED_DATA_VERSION,
+exportedAt: exportedAt,
+displayChapterNote: "chapter: その事実・項目が属する章（1=第一章, 2=第二章）",
+charas: charasOut,
+cats: catsOut,
+/* 参考：適用済みの元データ全体を再現するための構造（CHARAS / CATS と同等） */
+CHARAS: charasOut,
+CATS: catsOut
+};
+}
+function openExportSheet(jsonText){
+openSheet(
+'<h2>データを書き出す</h2>'
++ '<p class="confirmtext">下のJSONが今の全データです。コピーしてチャットで送ってください。コピーボタンでコピーできない場合は、テキストを長押し／全選択して手動でコピーしてください。</p>'
++ '<label>書き出しJSON（dataVersion: ' + SEED_DATA_VERSION + '）</label>'
++ '<textarea id="exportText" class="export-area" readonly>' + esc(jsonText) + '</textarea>'
++ '<div class="btnrow"><button type="button" class="bigbtn" id="expClose">閉じる</button>'
++ '<button type="button" class="bigbtn primary" id="expCopy">📋 コピーする</button></div>'
+);
+document.getElementById("expClose").addEventListener("click", closeSheet);
+document.getElementById("expCopy").addEventListener("click", function(){
+var ta = document.getElementById("exportText");
+try { ta.focus(); ta.select(); ta.setSelectionRange(0, ta.value.length); } catch(e){}
+copyTextRobust(jsonText, function(ok){ showToast(ok ? "コピーしました" : "コピーできませんでした。下のテキストを手動でコピーしてください"); });
+});
+}
+function copyTextRobust(text, done){
+function fallback(){
+var ta = document.createElement("textarea");
+ta.value = text; ta.style.position = "fixed"; ta.style.top = "0"; ta.style.left = "0"; ta.style.opacity = "0.01"; ta.setAttribute("readonly", "");
+document.body.appendChild(ta);
+try { ta.focus(); ta.select(); ta.setSelectionRange(0, ta.value.length); } catch(e){}
+var ok = false;
+try { ok = document.execCommand("copy"); } catch(e){ ok = false; }
+document.body.removeChild(ta);
+done(!!ok);
+}
+if(navigator.clipboard && navigator.clipboard.writeText && window.isSecureContext !== false){
+navigator.clipboard.writeText(text).then(function(){ done(true); }, function(){ fallback(); });
+} else { fallback(); }
+}
+var exportBtnEl = document.getElementById("exportBtn");
+if(exportBtnEl){
+exportBtnEl.addEventListener("click", function(){
+var data = buildExportData();
+var jsonText = JSON.stringify(data, null, 2);
+copyTextRobust(jsonText, function(ok){
+if(ok){ showToast("データをコピーしました。チャットに貼って送ってください"); openExportSheet(jsonText); }
+else { openExportSheet(jsonText); showToast("自動コピーできませんでした。表示されたテキストをコピーしてください"); }
+});
+});
+}
+
 /* ---------- コピー ---------- */
 var toast = document.getElementById("toast"), toastTimer = null;
 function showToast(msg){
@@ -1529,7 +1731,8 @@ showToast(fallbackCopy(text) ? "コピーしました" : "コピーできませ�
 /* ---------- 初期化 ---------- */
 buildData();
 render();
-if(!lsOK){ showToast("このブラウザでは編集の保存が使えません"); }
+if(dataUpdatedNotice){ showToast("データが更新されました"); dataUpdatedNotice = false; }
+else if(!lsOK){ showToast("このブラウザでは編集の保存が使えません"); }
 </script>
 </body>
 </html>
