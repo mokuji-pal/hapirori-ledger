@@ -65,6 +65,17 @@ a{color:inherit}
 .namelink{color:var(--accent-deep);text-decoration:none;border-bottom:1px dotted var(--accent);cursor:pointer;font-weight:600}
 ruby rt{font-size:.52em;color:var(--ink2);font-weight:400}
 .flash{animation:flashbg 1.6s ease-out}
+.backlinks{margin-top:14px;border-top:2px dashed var(--line);padding-top:8px}
+.backlink-list{font-size:14px;line-height:1.9}
+li.resolved p{color:var(--ink2)}
+.tl-filter{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.tl-chip{border:2px solid var(--line);background:#fff;border-radius:999px;padding:4px 12px;font-size:12.5px;font-weight:700;color:var(--ink2)}
+.tl-chip[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+.write-area{width:100%;border:2px solid var(--line);border-radius:12px;padding:10px 12px;font-size:16px;font-family:inherit;color:var(--ink);background:#fff;line-height:1.7;resize:vertical;margin:8px 0}
+.chk{display:block;font-size:14px;margin:6px 0}
+#diffBox:empty{display:none}
+#diffBox{background:var(--card);border:2px solid var(--line);border-radius:18px;padding:14px 16px;margin-bottom:12px}
+#diffBox .cardtitle{margin-top:0}
 @keyframes flashbg{0%{box-shadow:0 0 0 3px var(--accent)}100%{box-shadow:0 0 0 0 rgba(0,0,0,0)}}
 .tab{appearance:none;border:2px solid var(--line);background:var(--card);color:var(--ink2);border-radius:999px;padding:5px 10px;min-height:34px;font-size:12.5px;font-weight:700;cursor:pointer;font-family:"M PLUS Rounded 1c",sans-serif;display:inline-flex;align-items:center;gap:6px}
 .tab .cnt{font-size:11px;font-weight:700;background:var(--chip);color:var(--accent-deep);border-radius:999px;padding:1px 8px}
@@ -255,6 +266,7 @@ footer a{color:var(--accent-deep)}
 </div>
 <p class="chapter-note" data-chapter-note>第一章と第二章のデータを収録しています。「第二章まで」を選ぶと、第二章で判明した内容まで表示されます。</p>
 </div>
+<div id="diffBox"></div>
 <nav class="tabs" id="tabsEdit" aria-label="分類（編集）"></nav>
 <div id="editContent"></div>
 </section>
@@ -263,6 +275,28 @@ footer a{color:var(--accent-deep)}
 <section id="viewAbility" hidden>
 <p class="catnote">登場した能力の一覧です。表示範囲（第一章まで／第二章まで）に連動します。</p>
 <div class="cards" id="abilityContent"></div>
+</section>
+
+<!-- 執筆ビュー -->
+<section id="viewWrite" hidden>
+<div class="cards">
+<article class="card">
+<h3>原稿チェック</h3>
+<p class="overall">書いた原稿を貼ると、台帳の表記と照合します。表記ゆれの候補と、台帳に見つからないカタカナ語（固有名詞の可能性）を挙げます。判定はこの画面の中だけのもので、台帳データは変わりません。</p>
+<textarea id="msText" class="write-area" rows="8" placeholder="原稿を貼り付け"></textarea>
+<div class="row"><button type="button" class="bigbtn primary" id="msCheck">チェックする</button></div>
+<div id="msResult"></div>
+</article>
+<article class="card">
+<h3>ルビ付け補助</h3>
+<p class="overall">原稿の中の、読みが登録された名前（能力名など）を、なろうルビ記法への変換案に置き換えます。すでに記法で書かれた箇所はそのまま残します。</p>
+<textarea id="rbText" class="write-area" rows="8" placeholder="原稿を貼り付け"></textarea>
+<label class="chk"><input type="checkbox" id="rbChaku"> パーチェがコピーした能力には着の印を付ける</label>
+<div class="row"><button type="button" class="bigbtn primary" id="rbConvert">変換する</button>
+<button type="button" class="bigbtn" id="rbCopy">結果をコピー</button></div>
+<textarea id="rbOut" class="write-area" rows="8" readonly placeholder="変換結果"></textarea>
+</article>
+</div>
 </section>
 
 <footer>
@@ -286,6 +320,10 @@ footer a{color:var(--accent-deep)}
 <button type="button" class="tabbtn" id="tabAbility" aria-selected="false">
 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2l2.4 6.2L21 9l-5 4.4L17.5 20 12 16.6 6.5 20 8 13.4 3 9l6.6-.8z"/></svg>
 <span>能力</span><span class="dot"></span>
+</button>
+<button type="button" class="tabbtn" id="tabWrite" aria-selected="false">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+<span>執筆</span><span class="dot"></span>
 </button>
 </nav>
 
@@ -923,7 +961,7 @@ var EPISODES = [
 [20,"戦いの合間に謎の物音。黒翼の医師団への疑いが語られる。"],
 [21,"戦況が整理され、敵の能力が見えてくる。"],
 [22,"主人公が魔力量を量られる。襲撃者の力は外的要因ではないかと推測する。"],
-[23,"戦いの焦点が土の竜とオオヘビに移る。"],
+[23,"戦いの焦点が土の竜とヘビに移る。"],
 [24,"キスで魔力を移せることが示される。戦いは続く。"],
 [25,"リーダーの能力『大地からの暴君』が明かされ、土シャチに飲み込まれる。"],
 [26,"土シャチの体内から魔力の爆発で脱出。再戦が始まる。"],
@@ -1201,6 +1239,81 @@ F2("初出：2-16（名前のみ）",[56])
 })
 );
 
+/* ---------- 執筆補助（原稿チェック／ルビ付け） ---------- */
+var VARIANTS = [
+{ bad: "イサドラ", good: "イザドラ" },
+{ bad: "TYPE", good: "タイプ" },
+{ bad: "RANK", good: "ランク" },
+{ bad: "CLASS", good: "クラス" },
+{ bad: "虎", good: "トラ（十二支・動物を指す場合）" },
+{ bad: "大蛇", good: "ヘビ" },
+{ bad: "ボンビーン", good: "ビンボーン（作中に両方の表記があります。どちらかにそろえる場合の候補）" }
+];
+var KANA_COMMON = ["ロリポップ", "キャンディ", "キャンディー", "エネルギー", "バランス", "レベル", "スキル", "ステータス", "アイテム", "ポイント", "メンバー", "グループ", "チーム", "ホテル", "レストラン", "カフェ", "ドア", "ベッド", "テーブル", "ソファ", "シャワー", "トイレ", "キッチン", "リビング", "プレゼント", "イベント", "サービス", "システム", "ルール", "マナー", "スタート", "ゴール", "イメージ", "デザイン", "カラー", "サイズ", "セット", "コース", "メニュー", "オーダー", "ドリンク", "サラダ", "スープ", "ライス", "パスタ", "ピザ", "ケーキ", "コーヒー", "ジュース", "ビール", "ワイン", "ミルク", "チーズ", "バター", "ドレス", "シャツ", "スカート", "パンツ", "コート", "ブーツ", "バッグ", "ベルト", "リボン", "ポケット", "マフラー", "ハンカチ", "タオル", "ランプ", "カーテン", "ガラス", "クリスタル", "ルビー", "パール", "ゴールド", "シルバー", "シルク", "コットン", "フリル", "プリーツ", "ストライプ", "フラワー", "スター", "ハート", "シャドー", "ホーリー", "サンダー", "フレア", "アクア", "グラス", "グランド", "ウィンド"];
+function knownKanaStrings(){
+var out = [];
+LINK_ENTRIES.forEach(function(e){ out.push(e.name); });
+Object.keys(ABILITIES).forEach(function(n){ out.push(n); out.push(readingOf(n)); });
+Object.keys(EXTRA_RUBY).forEach(function(n){ out.push(n); out.push(EXTRA_RUBY[n]); });
+DATA.cats.forEach(function(cat){ cat.items.forEach(function(it){ if(it.title) out.push(it.title); }); });
+DATA.charas.forEach(function(ch){ out.push(ch.name); });
+return out.concat(KANA_COMMON);
+}
+function checkManuscript(){
+var text = document.getElementById("msText").value;
+var box = document.getElementById("msResult");
+if(!text.trim()){ box.innerHTML = '<p class="overall">原稿が空です。</p>'; return; }
+var h = "";
+VARIANTS.forEach(function(v){
+var count = text.split(v.bad).length - 1;
+if(!count) return;
+var idx = text.indexOf(v.bad);
+var snip = text.slice(Math.max(0, idx - 12), idx + v.bad.length + 12);
+h += '<p class="overall">⚠ 「' + esc(v.bad) + '」が' + count + '箇所 → 推奨：' + esc(v.good) + '<br>例：…' + esc(snip) + '…</p>';
+});
+var known = knownKanaStrings();
+var runs = text.match(/[ァ-ヶー]{3,}/g) || [];
+var seen = {}, cand = [];
+runs.forEach(function(r){
+if(seen[r]) return; seen[r] = 1;
+var hit = known.some(function(k){ return k && (k.indexOf(r) >= 0 || r.indexOf(k) >= 0); });
+if(!hit) cand.push(r);
+});
+if(cand.length){
+h += '<h4 class="subhead">台帳に見つからないカタカナ語（固有名詞の可能性）</h4><p class="overall">' + cand.map(esc).join("、") + '</p>';
+}
+box.innerHTML = h || '<p class="overall">表記ゆれの候補は見つかりませんでした。</p>';
+}
+function rubyConvertText(text, chaku){
+var names = Object.keys(ABILITIES).concat(Object.keys(EXTRA_RUBY)).sort(function(a, b){ return b.length - a.length; });
+var parts = text.split(/(｜[^《\n]*《[^》\n]*》)/g);
+return parts.map(function(part, i){
+if(i % 2 === 1) return part;
+names.forEach(function(name){
+var a = ABILITIES[name];
+var rep;
+if(a){
+rep = a.segs.map(function(sg){ return "｜" + sg[0] + "《" + sg[1] + "》"; }).join("");
+if(chaku && a.copied) rep += CHAKU_STR;
+} else {
+rep = "｜" + name + "《" + EXTRA_RUBY[name] + "》";
+}
+part = part.split(name).join(rep);
+});
+return part;
+}).join("");
+}
+document.getElementById("msCheck").addEventListener("click", checkManuscript);
+document.getElementById("rbConvert").addEventListener("click", function(){
+var text = document.getElementById("rbText").value;
+document.getElementById("rbOut").value = rubyConvertText(text, document.getElementById("rbChaku").checked);
+});
+document.getElementById("rbCopy").addEventListener("click", function(){
+var v = document.getElementById("rbOut").value;
+if(!v){ showToast("変換結果がありません"); return; }
+copyTextRobust(v, "変換結果をコピーしました");
+});
+
 /* ---------- 国 ---------- */
 addIF("country", "コルトゥーラ", "feat", [
 F2("最近、男を十二人雇った",[63]),
@@ -1460,6 +1573,14 @@ ovr.baseVersion = SEED_DATA_VERSION;
 try { window.localStorage.setItem(LS_KEY, JSON.stringify(ovr)); }
 catch(e){ lsOK = false; showToast("保存できませんでした（ブラウザの保存領域が使えません）"); }
 }
+/* ---------- 伏線の回収状態（端末に保存） ---------- */
+var RESOLVED_KEY = "hapirori-ledger-resolved-v1";
+var RESOLVED = {};
+try { var rraw = window.localStorage.getItem(RESOLVED_KEY); if(rraw) RESOLVED = JSON.parse(rraw) || {}; } catch(e){ RESOLVED = {}; }
+function saveResolved(){
+try { window.localStorage.setItem(RESOLVED_KEY, JSON.stringify(RESOLVED)); }
+catch(e){ showToast("保存できませんでした（ブラウザの保存領域が使えません）"); }
+}
 var uidCounter = 0;
 function newId(){ uidCounter++; return "u" + Date.now().toString(36) + uidCounter.toString(36); }
 
@@ -1628,6 +1749,13 @@ return m;
 }
 /* ---------- 名前のルビ表示と自動リンク ---------- */
 var RICH_SELF = null;
+var TL_FILTER = 0; /* 年表の章フィルタ（0=すべて） */
+document.addEventListener("click", function(e){
+var c = e.target.closest ? e.target.closest("[data-tlfilter]") : null;
+if(!c) return;
+TL_FILTER = parseInt(c.getAttribute("data-tlfilter"), 10) || 0;
+render();
+});
 var LINK_ENTRIES = [];
 function regEsc(s){ return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); }
 function dataCat(id){ for(var i=0;i<DATA.cats.length;i++){ if(DATA.cats[i].id === id) return DATA.cats[i]; } return null; }
@@ -1706,6 +1834,44 @@ return text.replace(/\u0001(\d+)\u0002/g, function(m, i){ return stash[parseInt(
 }
 function richText(raw){ return decorateText(raw, true); }
 function rubyOnly(raw){ return decorateText(raw, false); }
+/* ---------- 逆リンク ---------- */
+var BACKLINK_MAP = {};
+function computeBacklinks(){
+BACKLINK_MAP = {};
+function scan(text, srcKey, srcLabel){
+if(!text) return;
+LINK_ENTRIES.forEach(function(e){
+if(e.target === srcKey) return;
+if(text.indexOf(e.name) < 0) return;
+var arr = BACKLINK_MAP[e.target] || (BACKLINK_MAP[e.target] = []);
+for(var i=0;i<arr.length;i++){ if(arr[i].key === srcKey) return; }
+arr.push({ key: srcKey, label: srcLabel });
+});
+}
+DATA.cats.forEach(function(cat){
+if(cat.kind === "chara"){
+cat.items.forEach(function(ch){
+if(itemChapter(ch) > displayChapter) return;
+var srcKey = "chara:" + ch._id;
+ch.sections.forEach(function(sec){ visibleFacts(sec.facts).forEach(function(f){ scan(f.t, srcKey, ch.name); }); });
+});
+return;
+}
+cat.items.forEach(function(it){
+if(itemChapter(it) > displayChapter) return;
+var srcKey = "item:" + cat.id + ":" + (it.title || "");
+var lists = [it.facts, it.basic, it.feat];
+lists.forEach(function(list){ if(list) visibleFacts(list).forEach(function(f){ scan(f.t, srcKey, it.title); }); });
+if(it.timeline) visibleFacts(it.timeline).forEach(function(r){ scan(r.t, srcKey, it.title); });
+});
+});
+}
+function backlinksHTML(targetKey){
+var arr = BACKLINK_MAP[targetKey];
+if(!arr || !arr.length) return "";
+var links = arr.slice(0, 15).map(function(b){ return '<a class="namelink" data-jump="' + esc(b.key) + '">' + esc(b.label) + '</a>'; });
+return '<div class="backlinks"><h4 class="subhead">この項目に触れている項目</h4><p class="backlink-list">' + links.join("、") + '</p></div>';
+}
 function jumpTo(target){
 var parts = target.split(":");
 setView("browse");
@@ -1760,8 +1926,17 @@ h += '<h3 data-anchor="' + esc(item.title || "") + '">' + (showCat ? '<span clas
 if(edit) h += itemTools(item);
 if(item.ruby) h += copyRow(item.ruby);
 if(item.timeline){
+if(!edit){
+h += '<div class="tl-filter" role="tablist" aria-label="年表の章フィルタ">'
++ '<button type="button" class="tl-chip" data-tlfilter="0" aria-selected="' + (TL_FILTER === 0 ? "true" : "false") + '">すべて</button>'
++ '<button type="button" class="tl-chip" data-tlfilter="1" aria-selected="' + (TL_FILTER === 1 ? "true" : "false") + '">第一章</button>'
++ (displayChapter >= 2 ? '<button type="button" class="tl-chip" data-tlfilter="2" aria-selected="' + (TL_FILTER === 2 ? "true" : "false") + '">第二章</button>' : '')
++ '</div>';
+}
 h += '<ul class="tl">';
-visibleFacts(item.timeline).forEach(function(r){
+var tlRows = visibleFacts(item.timeline);
+if(TL_FILTER > 0) tlRows = tlRows.filter(function(r){ return factChapter(r) === TL_FILTER; });
+tlRows.forEach(function(r){
 h += '<li><span class="when">' + esc(r.when || "") + '</span><span class="what"><p>' + (edit ? esc(factDisplayText(r)) : richText(factDisplayText(r))) + '</p>' + srcBtns(r.s) + marks(r) + (edit ? factTools(r) : '') + '</span></li>';
 });
 h += '</ul>';
@@ -1777,14 +1952,143 @@ h += '<li><span class="ep-no">' + (n ? '<a class="src" href="' + SRC(n) + '" tar
 });
 h += '</ul>';
 if(edit) h += addFactBtn(item._id + "|facts", "あらすじを追加");
+} else if(cat.id === "foreshadow" && !edit){
+h += foreshadowHTML(item);
 } else {
 h += factLis(item.facts || [], edit);
 if(edit) h += addFactBtn(item._id + "|facts");
 }
+if(!edit) h += backlinksHTML("item:" + cat.id + ":" + (item.title || ""));
 h += '</article>';
 RICH_SELF = null;
 return h;
 }
+function foreshadowHTML(item){
+var facts = visibleFacts(item.facts || []);
+var open = [], done = [];
+facts.forEach(function(f){ if(RESOLVED[f._id]) done.push(f); else open.push(f); });
+var h = "";
+if(open.length){
+h += '<ul>' + open.map(function(f){
+return '<li><p>' + richText(factDisplayText(f)) + '</p>' + srcBtns(f.s) + marks(f)
++ '<div><button type="button" class="ebtn" data-resolve="' + esc(f._id) + '">回収済みにする</button></div></li>';
+}).join("") + '</ul>';
+} else {
+h += '<p class="overall">未回収の伏線はありません。</p>';
+}
+if(done.length){
+h += '<h4 class="subhead">回収済み</h4><ul>' + done.map(function(f){
+var r = RESOLVED[f._id];
+var ep = (r && r.ep) ? srcBtns([r.ep]) : "";
+return '<li class="resolved"><p>' + richText(factDisplayText(f)) + '</p>' + srcBtns(f.s) + ep
++ '<div><button type="button" class="ebtn" data-unresolve="' + esc(f._id) + '">未回収に戻す</button></div></li>';
+}).join("") + '</ul>';
+}
+return h;
+}
+function openResolveSheet(fid){
+var rec = FACT_INDEX[fid];
+var fact = rec ? rec.fact : null;
+openSheet('<h3>伏線を回収済みにする</h3>'
++ '<p>' + esc(fact ? fact.t : "") + '</p>'
++ '<label>回収された話（URLの番号。空欄でも可）</label><input type="number" id="rEp" inputmode="numeric" placeholder="例：66">'
++ '<div class="row"><button type="button" class="bigbtn" id="rCancel">やめる</button>'
++ '<button type="button" class="bigbtn primary" id="rSave">回収済みにする</button></div>');
+document.getElementById("rCancel").addEventListener("click", closeSheet);
+document.getElementById("rSave").addEventListener("click", function(){
+var v = document.getElementById("rEp").value.trim();
+var n = v ? parseInt(v, 10) : null;
+RESOLVED[fid] = { ep: (n && n > 0) ? n : null };
+saveResolved(); closeSheet(); render(); showToast("回収済みにしました");
+});
+}
+function appearanceHTML(ch){
+var eps = {};
+ch.sections.forEach(function(sec){ sec.facts.forEach(function(f){
+if(factChapter(f) > displayChapter) return;
+(f.s || []).forEach(function(n){ eps[n] = 1; });
+}); });
+var names = [ch.name];
+["パーチェ", "リベロ", "プリート", "ドルヴィ", "エレナ", "イザドラ", "イノ", "ウサギ", "ジーナ", "エイリー", "カリーノ"].forEach(function(sn){
+if(ch.name.indexOf(sn) >= 0 && names.indexOf(sn) < 0) names.push(sn);
+});
+EPISODES.forEach(function(ep){
+if((ep[2] || 1) > displayChapter) return;
+if(names.some(function(nm){ return ep[1].indexOf(nm) >= 0; })) eps[ep[0]] = 1;
+});
+var list = Object.keys(eps).map(Number).sort(function(a, b){ return a - b; });
+if(!list.length) return "";
+var chips = list.map(function(n){ return '<a class="srcbtn" href="' + SRC(n) + '" target="_blank" rel="noopener">' + epLabel(n) + '</a>'; }).join("");
+return '<h4 class="subhead">登場話（出典とあらすじから自動集計）</h4><p class="overall">最終登場：' + epLabel(list[list.length - 1]) + '（' + list.length + '話）</p><p>' + chips + '</p>';
+}
+function charaJump(name, label){
+var ch = null;
+DATA.charas.forEach(function(c){ if(c.name === name) ch = c; });
+if(!ch) return esc(label || name);
+return '<a class="namelink" data-jump="chara:' + esc(ch._id) + '">' + esc(label || name) + '</a>';
+}
+function relationsHTML(){
+var h = '<article class="card"><h3>相関図（主な関係）</h3>';
+h += '<h4 class="subhead">コルトゥーラ王室</h4><p class="overall">'
++ charaJump("アルジェント・リベロ") + '（国王）と' + charaJump("アルジェント・プリート") + '（王妃）は夫婦で、その子が' + charaJump("アルジェント・パーチェ", "パーチェ") + '。'
++ charaJump("エイリー") + 'は川で流されていたところをリベロに助けられ、城でメイドとして暮らしている。' + charaJump("カリーノ") + 'はメイド長。</p>';
+h += '<h4 class="subhead">セーレットと先代</h4><p class="overall">'
++ charaJump("エレナ・コリアス", "エレナ") + 'はセーレットの国王。初代国王アルジェント・ヴィルフレドはコルトゥーラの建国者で、' + charaJump("イザドラ・オーティス", "イザドラ") + 'はヴィルフレドを「お祖父様」と呼ぶ（関係の詳細は不明）。</p>';
+h += '<h4 class="subhead">敵対</h4><p class="overall">'
++ (displayChapter >= 2
+? charaJump("イノ") + 'は襲撃者のリーダー。第一章でコルトゥーラを襲った。'
+: '襲撃者の' + charaJump("リーダー（襲撃者）", "リーダー") + 'が第一章でコルトゥーラを襲った。')
++ '</p>';
+h += '</article>';
+return h;
+}
+function snapshotAll(){
+var facts = {}, items = {};
+DATA.charas.forEach(function(ch){
+items[ch._id] = ch.name;
+ch.sections.forEach(function(sec){ sec.facts.forEach(function(f){ facts[f._id] = { t: f.t, owner: ch.name + "／" + sec.h }; }); });
+});
+DATA.cats.forEach(function(cat){
+if(cat.kind === "chara") return;
+cat.items.forEach(function(it){
+items[it._id] = it.title || "";
+[["", it.facts], ["基本", it.basic], ["特徴", it.feat]].forEach(function(p){
+(p[1] || []).forEach(function(f){ facts[f._id] = { t: f.t, owner: (it.title || "") + (p[0] ? "／" + p[0] : "") }; });
+});
+if(it.timeline) it.timeline.forEach(function(r){ facts[r._id] = { t: r.t, owner: it.title || "" }; });
+});
+});
+return { facts: facts, items: items };
+}
+function computeDiffHTML(){
+var cur = snapshotAll();
+var savedOvr = ovr;
+ovr = emptyOvr(); buildData();
+var base = snapshotAll();
+ovr = savedOvr; buildData();
+var added = [], changed = [], deleted = [], itemAdded = [], itemDeleted = [];
+Object.keys(cur.facts).forEach(function(id){
+if(!base.facts[id]) added.push(cur.facts[id]);
+else if(base.facts[id].t !== cur.facts[id].t) changed.push(cur.facts[id]);
+});
+Object.keys(base.facts).forEach(function(id){ if(!cur.facts[id]) deleted.push(base.facts[id]); });
+Object.keys(cur.items).forEach(function(id){ if(!base.items[id]) itemAdded.push(cur.items[id]); });
+Object.keys(base.items).forEach(function(id){ if(!cur.items[id]) itemDeleted.push(base.items[id]); });
+if(!added.length && !changed.length && !deleted.length && !itemAdded.length && !itemDeleted.length){
+return '<p class="catnote">初期データからの変更はありません。</p>';
+}
+function lines(list, mark){
+return list.slice(0, 20).map(function(x){ return '<p class="overall">' + mark + ' ' + esc(x.owner) + '：' + esc(x.t) + '</p>'; }).join("");
+}
+var h = '<h3 class="cardtitle">初期データからの変更</h3>';
+if(itemAdded.length) h += '<p class="overall">追加した項目：' + itemAdded.map(esc).join("、") + '</p>';
+if(itemDeleted.length) h += '<p class="overall">削除した項目：' + itemDeleted.map(esc).join("、") + '</p>';
+if(added.length) h += '<h4 class="subhead">追加した事実（' + added.length + '件）</h4>' + lines(added, "＋");
+if(changed.length) h += '<h4 class="subhead">変更した事実（' + changed.length + '件）</h4>' + lines(changed, "✎");
+if(deleted.length) h += '<h4 class="subhead">削除した事実（' + deleted.length + '件）</h4>' + lines(deleted, "－");
+return h;
+}
+
 function countryHTML(cat, item, showCat, edit){
 RICH_SELF = "item:" + cat.id + ":" + (item.title || "");
 var h = '<article class="card">';
@@ -1794,6 +2098,7 @@ h += '<h4 class="subhead">基本情報</h4>' + factLis(item.basic || [], edit);
 if(edit) h += addFactBtn(item._id + "|basic");
 h += '<h4 class="subhead">特徴</h4>' + factLis(item.feat || [], edit);
 if(edit) h += addFactBtn(item._id + "|feat");
+if(!edit) h += backlinksHTML("item:" + cat.id + ":" + (item.title || ""));
 h += '</article>';
 RICH_SELF = null;
 return h;
@@ -1806,6 +2111,7 @@ if(edit) h += itemTools(item);
 h += '<h4 class="subhead">意味</h4>' + factLis(item.facts || [], edit);
 if(edit) h += addFactBtn(item._id + "|facts");
 h += '<h4 class="subhead">初出</h4><div class="debut-line">' + esc(item.debut || "") + srcBtns(item.debutSrc) + '</div>';
+if(!edit) h += backlinksHTML("item:" + cat.id + ":" + (item.title || ""));
 h += '</article>';
 RICH_SELF = null;
 return h;
@@ -1838,6 +2144,8 @@ h += factLis(q ? facts : sec.facts, edit);
 }
 if(edit) h += addFactBtn(ch._id + "|" + sec.h);
 });
+if(!edit && !q) h += appearanceHTML(ch);
+if(!edit && !q) h += backlinksHTML("chara:" + ch._id);
 h += '</article>';
 RICH_SELF = null;
 return any ? h : "";
@@ -1905,6 +2213,7 @@ h += '<div class="cards">' + charaPageHTML(ch, false, edit, null) + '</div>';
 return h;
 }
 }
+if(!edit && !activeChara) h += relationsHTML();
 h += '<div class="cards">';
 cat.items.forEach(function(ch){
 if(!edit && !isItemVisible(ch)) return;
@@ -1929,8 +2238,10 @@ return h;
 function render(){
 syncChapterUI();
 buildLinkIndex();
+computeBacklinks();
 buildTabs(tabsEl, activeId, "browse");
 buildTabs(tabsEditEl, editActiveId, "edit");
+if(view === "edit") document.getElementById("diffBox").innerHTML = computeDiffHTML();
 contentEl.innerHTML = categoryHTML(activeId, false, activeChara);
 editContentEl.innerHTML = categoryHTML(editActiveId, true, editChara);
 renderSearch();
@@ -1939,21 +2250,28 @@ renderAbilities();
 function renderSearch(){
 var q = qEl.value.trim().toLowerCase();
 if(!q){ searchContentEl.innerHTML = ""; resultLine.textContent = ""; return; }
+/* 読み検索：読み（カタカナ）が一致する名前も検索語に加える */
+var terms = [q];
+Object.keys(ABILITIES).concat(Object.keys(EXTRA_RUBY)).forEach(function(name){
+var r = readingOf(name);
+if(r && r.toLowerCase().indexOf(q) >= 0 && terms.indexOf(name.toLowerCase()) < 0) terms.push(name.toLowerCase());
+});
+function hitText(t){ t = (t || "").toLowerCase(); return terms.some(function(tm){ return t.indexOf(tm) >= 0; }); }
 var hits = 0, html = "";
 DATA.cats.forEach(function(cat){
 if(cat.kind === "chara"){
 cat.items.forEach(function(ch){
 if(itemChapter(ch) > displayChapter) return;
-var inName = ch.name.toLowerCase().indexOf(q) >= 0;
-var inFacts = ch.sections.some(function(sec){ return visibleFacts(sec.facts).some(function(f){ return f.t.toLowerCase().indexOf(q) >= 0; }); });
-if(inName || inFacts){ var page = charaPageHTML(ch, true, false, q); if(page){ hits++; html += page; } }
+var inName = hitText(ch.name) || hitText(ch.badge.ability);
+var inFacts = ch.sections.some(function(sec){ return visibleFacts(sec.facts).some(function(f){ return hitText(f.t); }); });
+if(inName || inFacts){ var pageQ = (ch.name.toLowerCase().indexOf(q) >= 0 || inFacts) ? q : ""; var page = charaPageHTML(ch, true, false, pageQ); if(page){ hits++; html += page; } }
 });
 return;
 }
 cat.items.forEach(function(item){
 if(itemChapter(item) > displayChapter) return;
-var inTitle = (item.title || "").toLowerCase().indexOf(q) >= 0;
-function filt(list){ var vis = visibleFacts(list); return inTitle ? vis : vis.filter(function(f){ return f.t.toLowerCase().indexOf(q) >= 0; }); }
+var inTitle = hitText(item.title || "");
+function filt(list){ var vis = visibleFacts(list); return inTitle ? vis : vis.filter(function(f){ return hitText(f.t); }); }
 if(cat.kind === "country"){
 var b = filt(item.basic), f2 = filt(item.feat);
 if(b.length || f2.length){ hits++; html += countryHTML(cat, Object.assign({}, item, { basic:b, feat:f2 }), true, false); }
@@ -1965,7 +2283,7 @@ if(tf.length){ hits++; html += termHTML(cat, Object.assign({}, item, { facts:tf 
 return;
 }
 if(item.timeline){
-var rows = visibleFacts(item.timeline).filter(function(r){ return inTitle || ((r.when || "") + " " + r.t).toLowerCase().indexOf(q) >= 0; });
+var rows = visibleFacts(item.timeline).filter(function(r){ return inTitle || hitText((r.when || "") + " " + r.t); });
 if(rows.length){ hits++; html += cardHTML(cat, Object.assign({}, item, { timeline: rows }), true, false); }
 return;
 }
@@ -1978,8 +2296,8 @@ resultLine.textContent = "検索結果：" + hits + " 項目";
 }
 
 /* ---------- ビュー切り替え ---------- */
-var viewEls = { browse: document.getElementById("viewBrowse"), search: document.getElementById("viewSearch"), edit: document.getElementById("viewEdit"), ability: document.getElementById("viewAbility") };
-var tabBtns = { browse: document.getElementById("tabBrowse"), search: document.getElementById("tabSearch"), edit: document.getElementById("tabEdit"), ability: document.getElementById("tabAbility") };
+var viewEls = { browse: document.getElementById("viewBrowse"), search: document.getElementById("viewSearch"), edit: document.getElementById("viewEdit"), ability: document.getElementById("viewAbility"), write: document.getElementById("viewWrite") };
+var tabBtns = { browse: document.getElementById("tabBrowse"), search: document.getElementById("tabSearch"), edit: document.getElementById("tabEdit"), ability: document.getElementById("tabAbility"), write: document.getElementById("tabWrite") };
 var abilityContentEl = document.getElementById("abilityContent");
 function renderAbilities(){
 var h = "";
@@ -2022,6 +2340,7 @@ tabBtns.browse.addEventListener("click", function(){ setView("browse"); });
 tabBtns.search.addEventListener("click", function(){ setView("search"); });
 tabBtns.edit.addEventListener("click", function(){ setView("edit"); });
 tabBtns.ability.addEventListener("click", function(){ setView("ability"); });
+tabBtns.write.addEventListener("click", function(){ setView("write"); });
 
 function onTabsClick(e){
 var b = e.target.closest ? e.target.closest(".tab") : null;
@@ -2237,6 +2556,10 @@ if(view === "edit"){ editChara = id; } else { activeChara = id; }
 render(); window.scrollTo({ top:0, behavior:"smooth" });
 return;
 }
+var rsBtn = t.closest ? t.closest("[data-resolve]") : null;
+if(rsBtn){ openResolveSheet(rsBtn.getAttribute("data-resolve")); return; }
+var unBtn = t.closest ? t.closest("[data-unresolve]") : null;
+if(unBtn){ delete RESOLVED[unBtn.getAttribute("data-unresolve")]; saveResolved(); render(); showToast("未回収に戻しました"); return; }
 var btn = t.closest ? t.closest("[data-act]") : null;
 if(!btn) return;
 var act = btn.getAttribute("data-act");
@@ -2319,6 +2642,7 @@ app: "ハピロリ設定資料室",
 dataVersion: SEED_DATA_VERSION,
 baseVersion: SEED_DATA_VERSION,
 exportedAt: exportedAt,
+resolvedForeshadowing: JSON.parse(JSON.stringify(RESOLVED)),
 displayChapterNote: "chapter: その事実・項目が属する章（1=第一章, 2=第二章）",
 charas: charasOut,
 cats: catsOut,
