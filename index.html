@@ -226,7 +226,7 @@ footer a{color:var(--accent-deep)}
 <div class="searchbar">
 <div class="searchbox">
 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.8-3.8"/></svg>
-<input id="q" type="text" placeholder="キーワード検索（項目名・本文）" aria-label="キーワード検索" enterkeyhint="search">
+<input id="q" type="search" placeholder="キーワード検索（項目名・本文）" aria-label="キーワード検索" autocomplete="off">
 <button class="clearbtn" id="clearBtn" type="button">クリア</button>
 </div>
 <p class="resultline" id="resultLine" aria-live="polite"></p>
@@ -258,6 +258,7 @@ footer a{color:var(--accent-deep)}
 </section>
 
 <footer>
+<p>ルビのコピーについて：なろう公式仕様ではルビは1フレーズ最大10文字までです。読みが10文字以内のものは <code>｜親文字《ルビ》</code> 形、10文字を超えるものは <code>親文字(ルビ)</code> の丸括弧形でコピーします。</p>
 <p>ホーム画面に追加すると、アプリのように開けます（Safariの共有ボタン →「ホーム画面に追加」）。</p>
 </footer>
 </div>
