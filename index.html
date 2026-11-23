@@ -76,6 +76,15 @@ li.resolved p{color:var(--ink2)}
 #diffBox:empty{display:none}
 #diffBox{background:var(--card);border:2px solid var(--line);border-radius:18px;padding:14px 16px;margin-bottom:12px}
 #diffBox .cardtitle{margin-top:0}
+.favbtn{border:none;background:none;font-size:22px;color:var(--accent);cursor:pointer;padding:2px 6px;line-height:1}
+.cardtools{text-align:right;margin-top:-6px}
+.favbox{background:var(--card);border:2px solid var(--line);border-radius:18px;padding:10px 16px;margin-bottom:12px}
+.memobox{margin-top:14px;border-top:2px dashed var(--line);padding-top:8px}
+.unknownbox{background:var(--card);border:2px solid var(--line);border-radius:18px;padding:12px 16px;margin-bottom:12px}
+.unknownbox summary{font-weight:800;font-size:14.5px;cursor:pointer;color:var(--ink)}
+.epgrid{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+.epchip{border:2px solid var(--line);background:#fff;border-radius:999px;padding:5px 11px;font-size:12.5px;font-weight:700;color:var(--ink2)}
+.epchip[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
 @keyframes flashbg{0%{box-shadow:0 0 0 3px var(--accent)}100%{box-shadow:0 0 0 0 rgba(0,0,0,0)}}
 .tab{appearance:none;border:2px solid var(--line);background:var(--card);color:var(--ink2);border-radius:999px;padding:5px 10px;min-height:34px;font-size:12.5px;font-weight:700;cursor:pointer;font-family:"M PLUS Rounded 1c",sans-serif;display:inline-flex;align-items:center;gap:6px}
 .tab .cnt{font-size:11px;font-weight:700;background:var(--chip);color:var(--accent-deep);border-radius:999px;padding:1px 8px}
@@ -222,6 +231,8 @@ footer a{color:var(--accent-deep)}
 </div>
 <p class="chapter-note" data-chapter-note>第一章と第二章のデータを収録しています。「第二章まで」を選ぶと、第二章で判明した内容まで表示されます。</p>
 </div>
+<div id="favBox"></div>
+<div id="unknownBox"></div>
 <nav class="tabs" id="tabs" aria-label="分類"></nav>
 <div id="content"></div>
 </section>
@@ -242,6 +253,7 @@ footer a{color:var(--accent-deep)}
 <input id="q" type="text" placeholder="キーワード検索（項目名・本文）" aria-label="キーワード検索" enterkeyhint="search">
 <button class="clearbtn" id="clearBtn" type="button">クリア</button>
 </div>
+<div id="recentBox"></div>
 <p class="resultline" id="resultLine" aria-live="polite"></p>
 </div>
 <div id="searchContent"></div>
@@ -271,33 +283,18 @@ footer a{color:var(--accent-deep)}
 <div id="editContent"></div>
 </section>
 
+<!-- 話ビュー -->
+<section id="viewEp" hidden>
+<p class="catnote">話を選ぶと、その話が出典になっている項目と事実が並びます。表示範囲に連動します。</p>
+<div id="epContent"></div>
+</section>
+
 <!-- 能力ビュー -->
 <section id="viewAbility" hidden>
 <p class="catnote">登場した能力の一覧です。表示範囲（第一章まで／第二章まで）に連動します。</p>
 <div class="cards" id="abilityContent"></div>
 </section>
 
-<!-- 執筆ビュー -->
-<section id="viewWrite" hidden>
-<div class="cards">
-<article class="card">
-<h3>原稿チェック</h3>
-<p class="overall">書いた原稿を貼ると、台帳の表記と照合します。表記ゆれの候補と、台帳に見つからないカタカナ語（固有名詞の可能性）を挙げます。判定はこの画面の中だけのもので、台帳データは変わりません。</p>
-<textarea id="msText" class="write-area" rows="8" placeholder="原稿を貼り付け"></textarea>
-<div class="row"><button type="button" class="bigbtn primary" id="msCheck">チェックする</button></div>
-<div id="msResult"></div>
-</article>
-<article class="card">
-<h3>ルビ付け補助</h3>
-<p class="overall">原稿の中の、読みが登録された名前（能力名など）を、なろうルビ記法への変換案に置き換えます。すでに記法で書かれた箇所はそのまま残します。</p>
-<textarea id="rbText" class="write-area" rows="8" placeholder="原稿を貼り付け"></textarea>
-<label class="chk"><input type="checkbox" id="rbChaku"> パーチェがコピーした能力には着の印を付ける</label>
-<div class="row"><button type="button" class="bigbtn primary" id="rbConvert">変換する</button>
-<button type="button" class="bigbtn" id="rbCopy">結果をコピー</button></div>
-<textarea id="rbOut" class="write-area" rows="8" readonly placeholder="変換結果"></textarea>
-</article>
-</div>
-</section>
 
 <footer>
 <p>ホーム画面に追加すると、アプリのように開けます（Safariの共有ボタン →「ホーム画面に追加」）。</p>
@@ -321,9 +318,9 @@ footer a{color:var(--accent-deep)}
 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2l2.4 6.2L21 9l-5 4.4L17.5 20 12 16.6 6.5 20 8 13.4 3 9l6.6-.8z"/></svg>
 <span>能力</span><span class="dot"></span>
 </button>
-<button type="button" class="tabbtn" id="tabWrite" aria-selected="false">
-<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
-<span>執筆</span><span class="dot"></span>
+<button type="button" class="tabbtn" id="tabEp" aria-selected="false">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+<span>話</span><span class="dot"></span>
 </button>
 </nav>
 
@@ -456,7 +453,6 @@ CH("エイリー", {type:"ナイン",cls:"サモン",rank:"霊獣級",ability:"�
 "基本情報":[
 F("名前：エイリー",[5]),
 F("性別：女"),
-F("年齢：魂の年齢は10歳",[14]),
 F("所属：コルトゥーラ王室",[5]),
 F("職業・立場：パーチェの専属メイド。後に旅の従者",[5,33])
 ],
@@ -580,7 +576,6 @@ CH("ジーナ", {type:"ホーリー",cls:"未出",rank:"妖精級",ability:"『�
 "基本情報":[
 F("名前：ジーナ",[6]),
 F("性別：女"),
-F("年齢：魂の年齢は12歳",[14]),
 F("所属：コルトゥーラ王室、宮廷救護班",[6]),
 F("職業・立場：メイド。宮廷救護班の班長",[6])
 ],
@@ -606,14 +601,13 @@ F("能力名：『ちょっとお昼寝』読みはピソリーノ・テンポ�
 F("タイプ：ホーリー",[6]),
 F("クラス：第一章では未出"),
 F("ランク：妖精級",[6,15]),
-F("能力概要：相手を眠らせる能力とされる。回復系のキャンディーとしても扱われている",[6,27])
+F("能力概要：回復の能力。パーチェがわき腹の痛みを治すために使うことを思いとどまる場面がある",[27])
 ]
 }),
 CH("カリーノ", {type:"未出",cls:"未出",rank:"妖精級",ability:"『困った探偵鳥（スピア・パッパガッロ）』"}, {
 "基本情報":[
 F("名前：カリーノ",[8,12]),
 F("性別：女"),
-F("年齢：魂の年齢は8歳",[14]),
 F("所属：コルトゥーラ王室",[12]),
 F("職業・立場：メイド",[12])
 ],
@@ -876,7 +870,7 @@ F("本当の力は第一章ではまだ出ていないとされる",[19])
 ]},
 { title:"ちょっとお昼寝（ピソリーノ・テンポラーニア）― ジーナの能力", ruby:"ちょっとお昼寝", facts:[
 F("読み：ピソリーノ・テンポラーニア",[]),
-F("相手を眠らせる能力とされる。回復系のキャンディーとしても扱われている",[6,27])
+F("回復の能力。パーチェがわき腹の痛みを治すために使うことを思いとどまる場面がある",[27])
 ]},
 { title:"困った探偵鳥（スピア・パッパガッロ）― カリーノの能力", ruby:"困った探偵鳥", facts:[
 F("読み：スピア・パッパガッロ",[]),
@@ -903,7 +897,6 @@ F("エイリーの水恐怖症の本当の原因。元のパーチェが生き�
 F("元のパーチェが外でしていた「あんな遊び」の内容",[29]),
 F("黒翼の医師団の正体",[20]),
 F("『絶望の終末（パンターノ・シン・ファンド）』の本当の力",[19]),
-F("エイリーの首のあざ",[19]),
 F("元のパーチェが能力を嫌っていた理由",[6]),
 F("トラの能力者の「姫に勝った」という発言の意味",[28])
 ]}
@@ -1239,81 +1232,6 @@ F2("初出：2-16（名前のみ）",[56])
 })
 );
 
-/* ---------- 執筆補助（原稿チェック／ルビ付け） ---------- */
-var VARIANTS = [
-{ bad: "イサドラ", good: "イザドラ" },
-{ bad: "TYPE", good: "タイプ" },
-{ bad: "RANK", good: "ランク" },
-{ bad: "CLASS", good: "クラス" },
-{ bad: "虎", good: "トラ（十二支・動物を指す場合）" },
-{ bad: "大蛇", good: "ヘビ" },
-{ bad: "ボンビーン", good: "ビンボーン（作中に両方の表記があります。どちらかにそろえる場合の候補）" }
-];
-var KANA_COMMON = ["ロリポップ", "キャンディ", "キャンディー", "エネルギー", "バランス", "レベル", "スキル", "ステータス", "アイテム", "ポイント", "メンバー", "グループ", "チーム", "ホテル", "レストラン", "カフェ", "ドア", "ベッド", "テーブル", "ソファ", "シャワー", "トイレ", "キッチン", "リビング", "プレゼント", "イベント", "サービス", "システム", "ルール", "マナー", "スタート", "ゴール", "イメージ", "デザイン", "カラー", "サイズ", "セット", "コース", "メニュー", "オーダー", "ドリンク", "サラダ", "スープ", "ライス", "パスタ", "ピザ", "ケーキ", "コーヒー", "ジュース", "ビール", "ワイン", "ミルク", "チーズ", "バター", "ドレス", "シャツ", "スカート", "パンツ", "コート", "ブーツ", "バッグ", "ベルト", "リボン", "ポケット", "マフラー", "ハンカチ", "タオル", "ランプ", "カーテン", "ガラス", "クリスタル", "ルビー", "パール", "ゴールド", "シルバー", "シルク", "コットン", "フリル", "プリーツ", "ストライプ", "フラワー", "スター", "ハート", "シャドー", "ホーリー", "サンダー", "フレア", "アクア", "グラス", "グランド", "ウィンド"];
-function knownKanaStrings(){
-var out = [];
-LINK_ENTRIES.forEach(function(e){ out.push(e.name); });
-Object.keys(ABILITIES).forEach(function(n){ out.push(n); out.push(readingOf(n)); });
-Object.keys(EXTRA_RUBY).forEach(function(n){ out.push(n); out.push(EXTRA_RUBY[n]); });
-DATA.cats.forEach(function(cat){ cat.items.forEach(function(it){ if(it.title) out.push(it.title); }); });
-DATA.charas.forEach(function(ch){ out.push(ch.name); });
-return out.concat(KANA_COMMON);
-}
-function checkManuscript(){
-var text = document.getElementById("msText").value;
-var box = document.getElementById("msResult");
-if(!text.trim()){ box.innerHTML = '<p class="overall">原稿が空です。</p>'; return; }
-var h = "";
-VARIANTS.forEach(function(v){
-var count = text.split(v.bad).length - 1;
-if(!count) return;
-var idx = text.indexOf(v.bad);
-var snip = text.slice(Math.max(0, idx - 12), idx + v.bad.length + 12);
-h += '<p class="overall">⚠ 「' + esc(v.bad) + '」が' + count + '箇所 → 推奨：' + esc(v.good) + '<br>例：…' + esc(snip) + '…</p>';
-});
-var known = knownKanaStrings();
-var runs = text.match(/[ァ-ヶー]{3,}/g) || [];
-var seen = {}, cand = [];
-runs.forEach(function(r){
-if(seen[r]) return; seen[r] = 1;
-var hit = known.some(function(k){ return k && (k.indexOf(r) >= 0 || r.indexOf(k) >= 0); });
-if(!hit) cand.push(r);
-});
-if(cand.length){
-h += '<h4 class="subhead">台帳に見つからないカタカナ語（固有名詞の可能性）</h4><p class="overall">' + cand.map(esc).join("、") + '</p>';
-}
-box.innerHTML = h || '<p class="overall">表記ゆれの候補は見つかりませんでした。</p>';
-}
-function rubyConvertText(text, chaku){
-var names = Object.keys(ABILITIES).concat(Object.keys(EXTRA_RUBY)).sort(function(a, b){ return b.length - a.length; });
-var parts = text.split(/(｜[^《\n]*《[^》\n]*》)/g);
-return parts.map(function(part, i){
-if(i % 2 === 1) return part;
-names.forEach(function(name){
-var a = ABILITIES[name];
-var rep;
-if(a){
-rep = a.segs.map(function(sg){ return "｜" + sg[0] + "《" + sg[1] + "》"; }).join("");
-if(chaku && a.copied) rep += CHAKU_STR;
-} else {
-rep = "｜" + name + "《" + EXTRA_RUBY[name] + "》";
-}
-part = part.split(name).join(rep);
-});
-return part;
-}).join("");
-}
-document.getElementById("msCheck").addEventListener("click", checkManuscript);
-document.getElementById("rbConvert").addEventListener("click", function(){
-var text = document.getElementById("rbText").value;
-document.getElementById("rbOut").value = rubyConvertText(text, document.getElementById("rbChaku").checked);
-});
-document.getElementById("rbCopy").addEventListener("click", function(){
-var v = document.getElementById("rbOut").value;
-if(!v){ showToast("変換結果がありません"); return; }
-copyTextRobust(v, "変換結果をコピーしました");
-});
-
 /* ---------- 国 ---------- */
 addIF("country", "コルトゥーラ", "feat", [
 F2("最近、男を十二人雇った",[63]),
@@ -1583,6 +1501,179 @@ catch(e){ showToast("保存できませんでした（ブラウザの保存領�
 }
 var uidCounter = 0;
 function newId(){ uidCounter++; return "u" + Date.now().toString(36) + uidCounter.toString(36); }
+
+/* ---------- お気に入り・メモ・最近見た項目（端末に保存） ---------- */
+function loadJSON(key, fallback){
+try { var v = window.localStorage.getItem(key); if(v) return JSON.parse(v); } catch(e){}
+return fallback;
+}
+function saveJSON(key, val){
+try { window.localStorage.setItem(key, JSON.stringify(val)); }
+catch(e){ showToast("保存できませんでした（ブラウザの保存領域が使えません）"); }
+}
+var MEMOS = loadJSON("hapirori-ledger-memos-v1", {});
+var FAVS = loadJSON("hapirori-ledger-favs-v1", []);
+var RECENT = loadJSON("hapirori-ledger-recent-v1", []);
+function isFav(key){ return FAVS.indexOf(key) >= 0; }
+function favBtnHTML(key){
+return '<button type="button" class="favbtn" data-fav="' + esc(key) + '" aria-label="お気に入り">' + (isFav(key) ? "★" : "☆") + '</button>';
+}
+function labelOfKey(key){
+if(key.indexOf("chara:") === 0){
+var id = key.slice(6), found = null;
+DATA.charas.forEach(function(c){ if(c._id === id) found = c.name; });
+return found;
+}
+var parts = key.split(":");
+var cat = dataCat(parts[1]);
+if(cat){ var t = null; cat.items.forEach(function(it){ if(it.title === parts.slice(2).join(":")) t = it.title; }); return t; }
+return null;
+}
+function recordRecent(key){
+var label = labelOfKey(key);
+if(!label) return;
+RECENT = RECENT.filter(function(r){ return r.key !== key; });
+RECENT.unshift({ key: key, label: label });
+if(RECENT.length > 8) RECENT = RECENT.slice(0, 8);
+saveJSON("hapirori-ledger-recent-v1", RECENT);
+}
+function memoHTML(key){
+var memo = MEMOS[key];
+var h = '<div class="memobox"><h4 class="subhead">メモ（作者用）</h4>';
+if(memo) h += '<p class="overall">' + esc(memo).replace(/\n/g, "<br>") + '</p>';
+h += '<button type="button" class="ebtn" data-memo="' + esc(key) + '">' + (memo ? "メモを編集" : "メモを追加") + '</button></div>';
+return h;
+}
+function openMemoSheet(key){
+var label = labelOfKey(key) || key;
+openSheet('<h3>メモ：' + esc(label) + '</h3>'
++ '<label>内容（台帳の事実とは別の、作者用のメモです）</label><textarea id="mText">' + esc(MEMOS[key] || "") + '</textarea>'
++ '<div class="row"><button type="button" class="bigbtn" id="mCancel">やめる</button>'
++ '<button type="button" class="bigbtn primary" id="mSave">保存</button></div>');
+document.getElementById("mCancel").addEventListener("click", closeSheet);
+document.getElementById("mSave").addEventListener("click", function(){
+var v = document.getElementById("mText").value.trim();
+if(v) MEMOS[key] = v; else delete MEMOS[key];
+saveJSON("hapirori-ledger-memos-v1", MEMOS);
+closeSheet(); render(); showToast("メモを保存しました");
+});
+}
+document.addEventListener("click", function(e){
+var t = e.target;
+var fb = t.closest ? t.closest("[data-fav]") : null;
+if(fb){
+var key = fb.getAttribute("data-fav");
+if(isFav(key)) FAVS = FAVS.filter(function(k){ return k !== key; }); else FAVS.push(key);
+saveJSON("hapirori-ledger-favs-v1", FAVS);
+render();
+return;
+}
+var mb = t.closest ? t.closest("[data-memo]") : null;
+if(mb){ openMemoSheet(mb.getAttribute("data-memo")); return; }
+var epb = t.closest ? t.closest("[data-ep]") : null;
+if(epb){ EP_SEL = parseInt(epb.getAttribute("data-ep"), 10) || null; render(); return; }
+});
+function renderFavs(){
+var box = document.getElementById("favBox");
+if(!box) return;
+if(!FAVS.length){ box.innerHTML = ""; return; }
+var chips = [];
+FAVS.forEach(function(key){
+var label = labelOfKey(key);
+if(label) chips.push('<a class="namelink" data-jump="' + esc(key) + '">★ ' + esc(label) + '</a>');
+});
+box.innerHTML = chips.length ? '<div class="favbox"><h4 class="subhead">お気に入り</h4><p class="backlink-list">' + chips.join("、") + '</p></div>' : "";
+}
+function renderRecent(){
+var box = document.getElementById("recentBox");
+if(!box) return;
+if(!RECENT.length){ box.innerHTML = ""; return; }
+var chips = RECENT.map(function(r){ return '<a class="namelink" data-jump="' + esc(r.key) + '">' + esc(r.label) + '</a>'; });
+box.innerHTML = '<div class="favbox"><h4 class="subhead">最近見た項目</h4><p class="backlink-list">' + chips.join("、") + '</p></div>';
+}
+function renderUnknown(){
+var box = document.getElementById("unknownBox");
+if(!box) return;
+var rows = [];
+DATA.charas.forEach(function(ch){
+if(itemChapter(ch) > displayChapter) return;
+if((ch.badge.ability || "").indexOf("未出") >= 0) rows.push({ key: "chara:" + ch._id, label: ch.name, text: "能力名は未出" });
+ch.sections.forEach(function(sec){ visibleFacts(sec.facts).forEach(function(f){
+if(f.t.indexOf("未出") >= 0 || f.t.indexOf("不明") >= 0) rows.push({ key: "chara:" + ch._id, label: ch.name, text: f.t });
+}); });
+});
+DATA.cats.forEach(function(cat){
+if(cat.kind === "chara") return;
+cat.items.forEach(function(it){
+if(itemChapter(it) > displayChapter) return;
+var key = "item:" + cat.id + ":" + (it.title || "");
+[it.facts, it.basic, it.feat].forEach(function(list){
+if(list) visibleFacts(list).forEach(function(f){
+if(f.t.indexOf("未出") >= 0 || f.t.indexOf("不明") >= 0) rows.push({ key: key, label: it.title, text: f.t });
+});
+});
+});
+});
+if(!rows.length){ box.innerHTML = ""; return; }
+var lis = rows.slice(0, 40).map(function(r){
+return '<p class="overall"><a class="namelink" data-jump="' + esc(r.key) + '">' + esc(r.label) + '</a>：' + esc(r.text) + '</p>';
+}).join("");
+box.innerHTML = '<details class="unknownbox"><summary>まだ決まっていない設定（未出・不明） ' + rows.length + '件</summary>' + lis + '</details>';
+}
+/* ---------- 話ページ（話ごとの逆引き） ---------- */
+var EP_SEL = null;
+function episodeDetailHTML(n){
+var rows = [];
+DATA.charas.forEach(function(ch){
+if(itemChapter(ch) > displayChapter) return;
+ch.sections.forEach(function(sec){ visibleFacts(sec.facts).forEach(function(f){
+if((f.s || []).indexOf(n) >= 0) rows.push({ key: "chara:" + ch._id, label: ch.name, text: f.t });
+}); });
+});
+DATA.cats.forEach(function(cat){
+if(cat.kind === "chara" || cat.synopsis) return;
+cat.items.forEach(function(it){
+if(itemChapter(it) > displayChapter) return;
+var key = "item:" + cat.id + ":" + (it.title || "");
+[it.facts, it.basic, it.feat].forEach(function(list){
+if(list) visibleFacts(list).forEach(function(f){
+if((f.s || []).indexOf(n) >= 0) rows.push({ key: key, label: it.title, text: f.t });
+});
+});
+if(it.timeline) visibleFacts(it.timeline).forEach(function(r){
+if((r.s || []).indexOf(n) >= 0) rows.push({ key: key, label: it.title, text: r.t });
+});
+});
+});
+var syn = null;
+EPISODES.forEach(function(ep){ if(ep[0] === n) syn = ep[1]; });
+var h = '<article class="card"><h3>' + epLabel(n) + ' <a class="srcbtn" href="' + SRC(n) + '" target="_blank" rel="noopener">なろうで読む</a></h3>';
+if(syn) h += '<p class="overall">' + richText(syn) + '</p>';
+if(rows.length){
+h += '<h4 class="subhead">この話が出典の事実（' + rows.length + '件）</h4>' + rows.slice(0, 60).map(function(r){
+return '<p class="overall"><a class="namelink" data-jump="' + esc(r.key) + '">' + esc(r.label) + '</a>：' + richText(r.text) + '</p>';
+}).join("");
+} else {
+h += '<p class="overall">この話を出典とする事実はまだありません。</p>';
+}
+return h + '</article>';
+}
+function renderEpisodes(){
+var box = document.getElementById("epContent");
+if(!box) return;
+var h = "";
+[1, 2].forEach(function(ch){
+if(ch > displayChapter) return;
+h += '<h4 class="subhead">' + (ch === 1 ? "第一章" : "第二章") + '</h4><div class="epgrid">';
+EPISODES.forEach(function(ep){
+if((ep[2] || 1) !== ch) return;
+h += '<button type="button" class="epchip" data-ep="' + ep[0] + '" aria-selected="' + (EP_SEL === ep[0] ? "true" : "false") + '">' + epLabel(ep[0]) + '</button>';
+});
+h += '</div>';
+});
+if(EP_SEL && EP_SEL <= (displayChapter >= 2 ? 66 : 33)) h += episodeDetailHTML(EP_SEL);
+box.innerHTML = h;
+}
 
 /* ---------- 差分を適用した実効データを構築 ---------- */
 var DATA = null;      /* { cats:[...], charas:[...] } */
@@ -1873,6 +1964,7 @@ var links = arr.slice(0, 15).map(function(b){ return '<a class="namelink" data-j
 return '<div class="backlinks"><h4 class="subhead">この項目に触れている項目</h4><p class="backlink-list">' + links.join("、") + '</p></div>';
 }
 function jumpTo(target){
+recordRecent(target);
 var parts = target.split(":");
 setView("browse");
 if(parts[0] === "chara"){
@@ -1924,6 +2016,7 @@ RICH_SELF = "item:" + cat.id + ":" + (item.title || "");
 var h = '<article class="card' + (item.wide ? ' wide' : '') + '">';
 h += '<h3 data-anchor="' + esc(item.title || "") + '">' + (showCat ? '<span class="cat-tag">' + cat.icon + ' ' + esc(cat.name) + '</span>' : '') + rubyOnly(item.title || "") + itemMarks(item) + '</h3>';
 if(edit) h += itemTools(item);
+if(!edit) h += '<div class="cardtools">' + favBtnHTML("item:" + cat.id + ":" + (item.title || "")) + '</div>';
 if(item.ruby) h += copyRow(item.ruby);
 if(item.timeline){
 if(!edit){
@@ -1958,6 +2051,7 @@ h += foreshadowHTML(item);
 h += factLis(item.facts || [], edit);
 if(edit) h += addFactBtn(item._id + "|facts");
 }
+if(!edit) h += memoHTML("item:" + cat.id + ":" + (item.title || ""));
 if(!edit) h += backlinksHTML("item:" + cat.id + ":" + (item.title || ""));
 h += '</article>';
 RICH_SELF = null;
@@ -2094,10 +2188,12 @@ RICH_SELF = "item:" + cat.id + ":" + (item.title || "");
 var h = '<article class="card">';
 h += '<h3 data-anchor="' + esc(item.title || "") + '">' + (showCat ? '<span class="cat-tag">' + cat.icon + ' ' + esc(cat.name) + '</span>' : '') + rubyOnly(item.title || "") + itemMarks(item) + '</h3>';
 if(edit) h += itemTools(item);
+if(!edit) h += '<div class="cardtools">' + favBtnHTML("item:" + cat.id + ":" + (item.title || "")) + '</div>';
 h += '<h4 class="subhead">基本情報</h4>' + factLis(item.basic || [], edit);
 if(edit) h += addFactBtn(item._id + "|basic");
 h += '<h4 class="subhead">特徴</h4>' + factLis(item.feat || [], edit);
 if(edit) h += addFactBtn(item._id + "|feat");
+if(!edit) h += memoHTML("item:" + cat.id + ":" + (item.title || ""));
 if(!edit) h += backlinksHTML("item:" + cat.id + ":" + (item.title || ""));
 h += '</article>';
 RICH_SELF = null;
@@ -2108,9 +2204,11 @@ RICH_SELF = "item:" + cat.id + ":" + (item.title || "");
 var h = '<article class="card">';
 h += '<h3 data-anchor="' + esc(item.title || "") + '">' + (showCat ? '<span class="cat-tag">' + cat.icon + ' ' + esc(cat.name) + '</span>' : '') + rubyOnly(item.title || "") + itemMarks(item) + '</h3>';
 if(edit) h += itemTools(item);
+if(!edit) h += '<div class="cardtools">' + favBtnHTML("item:" + cat.id + ":" + (item.title || "")) + '</div>';
 h += '<h4 class="subhead">意味</h4>' + factLis(item.facts || [], edit);
 if(edit) h += addFactBtn(item._id + "|facts");
 h += '<h4 class="subhead">初出</h4><div class="debut-line">' + esc(item.debut || "") + srcBtns(item.debutSrc) + '</div>';
+if(!edit) h += memoHTML("item:" + cat.id + ":" + (item.title || ""));
 if(!edit) h += backlinksHTML("item:" + cat.id + ":" + (item.title || ""));
 h += '</article>';
 RICH_SELF = null;
@@ -2119,6 +2217,7 @@ return h;
 function charaPageHTML(ch, showCat, edit, q){
 RICH_SELF = "chara:" + ch._id;
 var h = '<article class="card wide charapage">';
+if(!edit && !q) h += '<div class="cardtools">' + favBtnHTML("chara:" + ch._id) + '</div>';
 h += '<h3>' + (showCat ? '<span class="cat-tag">💁 キャラ</span>' : '') + rubyOnly(ch.name) + itemMarks(ch) + '</h3>';
 if(edit) h += '<div class="itemtools"><button type="button" class="ebtn" data-act="edit-chara" data-iid="' + esc(ch._id) + '">キャラを編集</button>'
 + '<button type="button" class="ebtn danger" data-act="del-item" data-iid="' + esc(ch._id) + '">キャラを削除</button></div>';
@@ -2144,6 +2243,7 @@ h += factLis(q ? facts : sec.facts, edit);
 }
 if(edit) h += addFactBtn(ch._id + "|" + sec.h);
 });
+if(!edit && !q) h += memoHTML("chara:" + ch._id);
 if(!edit && !q) h += appearanceHTML(ch);
 if(!edit && !q) h += backlinksHTML("chara:" + ch._id);
 h += '</article>';
@@ -2246,6 +2346,10 @@ contentEl.innerHTML = categoryHTML(activeId, false, activeChara);
 editContentEl.innerHTML = categoryHTML(editActiveId, true, editChara);
 renderSearch();
 renderAbilities();
+renderFavs();
+renderUnknown();
+renderRecent();
+renderEpisodes();
 }
 function renderSearch(){
 var q = qEl.value.trim().toLowerCase();
@@ -2296,8 +2400,8 @@ resultLine.textContent = "検索結果：" + hits + " 項目";
 }
 
 /* ---------- ビュー切り替え ---------- */
-var viewEls = { browse: document.getElementById("viewBrowse"), search: document.getElementById("viewSearch"), edit: document.getElementById("viewEdit"), ability: document.getElementById("viewAbility"), write: document.getElementById("viewWrite") };
-var tabBtns = { browse: document.getElementById("tabBrowse"), search: document.getElementById("tabSearch"), edit: document.getElementById("tabEdit"), ability: document.getElementById("tabAbility"), write: document.getElementById("tabWrite") };
+var viewEls = { browse: document.getElementById("viewBrowse"), search: document.getElementById("viewSearch"), edit: document.getElementById("viewEdit"), ability: document.getElementById("viewAbility"), ep: document.getElementById("viewEp") };
+var tabBtns = { browse: document.getElementById("tabBrowse"), search: document.getElementById("tabSearch"), edit: document.getElementById("tabEdit"), ability: document.getElementById("tabAbility"), ep: document.getElementById("tabEp") };
 var abilityContentEl = document.getElementById("abilityContent");
 function renderAbilities(){
 var h = "";
@@ -2340,7 +2444,7 @@ tabBtns.browse.addEventListener("click", function(){ setView("browse"); });
 tabBtns.search.addEventListener("click", function(){ setView("search"); });
 tabBtns.edit.addEventListener("click", function(){ setView("edit"); });
 tabBtns.ability.addEventListener("click", function(){ setView("ability"); });
-tabBtns.write.addEventListener("click", function(){ setView("write"); });
+tabBtns.ep.addEventListener("click", function(){ setView("ep"); });
 
 function onTabsClick(e){
 var b = e.target.closest ? e.target.closest(".tab") : null;
@@ -2552,7 +2656,7 @@ var t = e.target;
 var charaBtn = t.closest ? t.closest("[data-chara]") : null;
 if(charaBtn){
 var id = charaBtn.getAttribute("data-chara");
-if(view === "edit"){ editChara = id; } else { activeChara = id; }
+if(view === "edit"){ editChara = id; } else { activeChara = id; recordRecent("chara:" + id); }
 render(); window.scrollTo({ top:0, behavior:"smooth" });
 return;
 }
@@ -2643,6 +2747,7 @@ dataVersion: SEED_DATA_VERSION,
 baseVersion: SEED_DATA_VERSION,
 exportedAt: exportedAt,
 resolvedForeshadowing: JSON.parse(JSON.stringify(RESOLVED)),
+memos: JSON.parse(JSON.stringify(MEMOS)),
 displayChapterNote: "chapter: その事実・項目が属する章（1=第一章, 2=第二章）",
 charas: charasOut,
 cats: catsOut,
