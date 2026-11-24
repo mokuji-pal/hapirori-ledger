@@ -146,6 +146,8 @@ li.resolved p{color:var(--ink2)}
 .copybtn:hover{background:var(--accent);color:#fff}
 .copyrow{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0 0 12px}
 .rubynote{font-size:11.5px;color:var(--ink2);width:100%}
+.origin{font-size:13.5px;color:var(--ink2);border-top:1px dashed var(--line);padding-top:8px;margin-top:10px}
+.sortlabel{font-size:13px;color:var(--ink2);align-self:center}
 .debut-line{position:relative;font-size:14.5px;padding:8px 0 8px 16px}
 .debut-line::before{content:"";position:absolute;left:0;top:17px;width:7px;height:7px;border-radius:50%;background:var(--accent)}
 
@@ -357,7 +359,7 @@ function epShort(n){ if(n >= 67 && n <= 74) return "2a-" + (n - 66); if(n >= 40 
 /* 能力レジストリ。segs は [親文字, ルビ] の組で、ルビは1組10文字以内に分割済み */
 var ABILITIES = {
 "少女夢想": { reading:"ハッピーポッピンロリポップ", segs:[["少女","ハッピーポッピン"],["夢想","ロリポップ"]], user:"アルジェント・パーチェ", type:"ナイン", cls:"パワー", chapter:1, copied:false },
-"操獣機巧": { reading:"ベースティア・フェローチェ", segs:[["操獣","ベースティア"],["機巧","・フェローチェ"]], user:"エイリー", type:"ナイン", cls:"サモン", chapter:1, copied:true },
+"操獣機巧": { reading:"ベースティア・フェローチェ", segs:[["操獣","ベースティア"],["機巧","・フェローチェ"]], user:"エイリー", type:"ナイン", cls:"サモン", chapter:1, copied:true, ha:true },
 "絶望の終末": { reading:"パンターノ・シン・ファンド", segs:[["絶望","パンターノ"],["の終末","・シン・ファンド"]], user:"ドルヴィ・エルズバーグ", type:"デュアル（アクア／グランド）", cls:"未出", chapter:1, copied:true },
 "ちょっとお昼寝": { reading:"ピソリーノ・テンポラーニア", segs:[["ちょっと","ピソリーノ"],["お昼寝","・テンポラーニア"]], user:"ジーナ", type:"ホーリー", cls:"未出", chapter:1, copied:true },
 "困った探偵鳥": { reading:"スピア・パッパガッロ", segs:[["困った探偵鳥","スピア・パッパガッロ"]], user:"カリーノ", type:"未出", cls:"未出", chapter:1, copied:true },
@@ -365,17 +367,65 @@ var ABILITIES = {
 "一刃の風": { reading:"ヴェンタータ", segs:[["一刃の風","ヴェンタータ"]], user:"アルジェント・リベロ", type:"ウィンド", cls:"ソルジャー", chapter:1, copied:false }
 };
 var UNNAMED_ABILITIES = [
-{ title:"エレナの能力（蓮）", user:"エレナ・コリアス", type:"グラス", cls:"ウィザード", chapter:2, desc:"オオオニバスを大量に出し、ボートのように操縦したり、ちょっとだけ飛んだりできる。能力名は未出" },
 { title:"大男の能力（風）", user:"大男", type:"未出", cls:"未出", chapter:2, desc:"風・爆風・竜巻を操り、指先から風を出す。能力名は未出" },
-{ title:"イノの能力（土のイノシシ）", user:"イノ", type:"未出", cls:"未出", chapter:2, desc:"土の中から巨大なイノシシを出す。能力名は未出" }
 ];
 /* 能力以外で、読みが漢字と大きく違う名前 */
 var EXTRA_RUBY = { "超晴天行商": "ブルースカイキャラバン" };
+var ORIGINS = {
+"少女夢想": "読みを合わせると、作品タイトル『ハッピーポッピンロリポップ』になる",
+"操獣機巧": "イタリア語の『bestia』（獣）と『feroce』（獰猛な）を合わせた名前",
+"絶望の終末": "スペイン語の『pantano』（沼）と『sin fondo』（底なし）を合わせた名前",
+"ちょっとお昼寝": "イタリア語の『pisolino』（うたた寝）と『temporaneo』（一時的な）に由来する名前",
+"困った探偵鳥": "イタリア語の『spia』（スパイ、密偵）と『pappagallo』（オウム）を合わせた名前",
+"大地からの暴君": "ポルトガル語の『baleia assassina』（シャチ。直訳すると『殺し屋クジラ』）に由来する名前",
+"一刃の風": "イタリア語の『ventata』（一陣の風、突風）に由来する名前",
+"豊穣の果実": "イタリア語の『fertilità』（豊穣、肥沃）に由来する名前",
+"それいけ友達大行進": "行進の掛け声を思わせる造語",
+"アルジェント・パーチェ": "『アルジェント』はイタリア語の『argento』（銀）。『パーチェ』はイタリア語の『pace』（平和）と思われる",
+"アルジェント・リベロ": "『アルジェント』はイタリア語の『argento』（銀）。『リベロ』はイタリア語の『libero』（自由な）",
+"アルジェント・プリート": "『アルジェント』はイタリア語の『argento』（銀）。『プリート』はイタリア語の『prete』（司祭）を思わせる",
+"ジーナ": "イタリア語の女性名『Gina』",
+"カリーノ": "イタリア語の『carino』（可愛い、愛らしい）",
+"ドルヴィ・エルズバーグ": "『エルズバーグ』はドイツ語風の姓で、『Berg』は「山」の意味",
+"エレナ・コリアス": "『エレナ』はギリシャ系の女性名『Elena』",
+"イザドラ・オーティス": "『イザドラ』はギリシャ系の女性名『Isadora』（イシスの贈り物）。『オーティス』は英語圏の姓『Otis』",
+"リン・グエン": "『グエン』はベトナム語の姓『Nguyễn』",
+"超晴天行商": "読みの『ブルースカイキャラバン』は英語の『blue sky caravan』（青空のキャラバン）",
+"シード・アソシエイツ": "英語の『seed』（種）と『associates』（仲間たち、共同事業者）を合わせた名前",
+"ビンボーン": "『貧乏（ビンボー）』をもじった名前と思われる",
+"ポセイドンネット": "ギリシャ神話の海神『ポセイドン』と、通信網の『ネット』を合わせた名前",
+"ゴーマグ": "『ゴー』（行くぞ）と『マグナム』を合わせた造語と思われる",
+"アクアガゼル": "『aqua』（ラテン語で水）と動物の『ガゼル』を合わせた名前",
+"コルトゥーラ": "イタリア語の『coltura』（栽培、文化）を思わせる名前"
+};
+ORIGINS[String.fromCharCode(0x3010) + "破" + String.fromCharCode(0x3011)] = "読みの『インパクト』は英語の『impact』（衝撃）";
+var RECS = {
+"イザドラ・オーティス": ["本文では『イサドラ』と表記される話もあり、表記が揺れています。どちらかに統一するか確認を推奨します"],
+"ランク": ["本文に『聖霊級』の表記も見られ、『精霊級』と表記が揺れています"],
+"魚の雨": ["原因について、第二章では『属性神王級の仕業』と『海神王級の仕業』の両方の言及があり、食い違っています"],
+"エレナ・コリアス": ["第二章では腕の本数の描写に揺れがあります（片腕とする描写と、二本とする描写）"]
+};
+function recOriginHTML(o){
+var keys = [o.ruby, o.title, o.name];
+var h = "";
+for(var i = 0; i < keys.length; i++){
+var recs = keys[i] ? RECS[keys[i]] : null;
+if(recs && recs.length){ h += '<h4 class="subhead">訂正推奨点</h4><ul>' + recs.map(function(r){ return '<li><p>' + esc(r) + '</p></li>'; }).join("") + '</ul>'; break; }
+}
+for(var j = 0; j < keys.length; j++){
+var org = keys[j] ? ORIGINS[keys[j]] : null;
+if(org){ h += '<p class="origin">名前の由来：' + esc(org) + '</p>'; break; }
+}
+return h;
+}
+
 var CHAKU_STR = String.fromCharCode(0x3010) + "｜着《・トッピング》" + String.fromCharCode(0x3011);
-function abilityCopyText(name, chaku){
+var HA_STR = String.fromCharCode(0x3010) + "｜破《インパクト》" + String.fromCharCode(0x3011);
+function abilityCopyText(name, chaku, ha){
 var a = ABILITIES[name]; if(!a) return "";
-var s = "『" + a.segs.map(function(sg){ return "｜" + sg[0] + "《" + sg[1] + "》"; }).join("");
+var s = "『" + a.segs.map(function(sg){ return sg[1]? "｜" + sg[0] + "《" + sg[1] + "》": sg[0];}).join("");
 if(chaku) s += CHAKU_STR;
+if(ha) s += HA_STR;
 return s + "』";
 }
 function rubyKeyOf(ability){
@@ -577,7 +627,6 @@ F("金髪で青い目、ふわふわした雰囲気",[5])
 ],
 "性格・内面":[
 F("優しい性格",[5]),
-F("パーチェの能力を「お菓子の妖精さんみたい」と言った",[9]),
 F("エイリーを娘のように扱う",[33])
 ],
 "嗜好":[ F("第一章では未出")],
@@ -596,13 +645,13 @@ CH("ジーナ", {type:"ホーリー",cls:"未出",rank:"妖精級",ability:"『�
 F("名前：ジーナ",[6]),
 F("性別：女"),
 F("所属：コルトゥーラ王室、宮廷救護班",[6]),
-F("職業・立場：メイド。宮廷救護班の班長",[6])
+F("職業・立場：メイド。宮廷救護班の救護長",[6])
 ],
 "初出一覧":[
 F("初登場：1-5",[6])
 ],
 "外見":[
-F("黒髪で三つ編み、厳しい顔つき、額に傷がある",[6])
+F("黒髪で三つ編み、厳しい顔つき、手の甲に傷がある",[6])
 ],
 "性格・内面":[
 F("パーチェにわりと心を開いているように見える（演技かもしれないと主人公は思っている）",[32])
@@ -610,7 +659,7 @@ F("パーチェにわりと心を開いているように見える（演技か�
 "嗜好":[ F("第一章では未出")],
 "来歴":[
 F("黒翼の医師団に所属していたとされる",[6]),
-F("額の傷は、元のパーチェが鏡を投げて付けたもの",[6])
+F("手の甲の傷は、元のパーチェが顔面に向けて投げた手鏡を、手の甲で受けたもの",[6])
 ],
 "人間関係":[
 F("主：アルジェント・パーチェ",[6])
@@ -659,7 +708,7 @@ CH("ドルヴィ・エルズバーグ", {type:"デュアル（アクア／グラ
 "基本情報":[
 F("名前：ドルヴィ・エルズバーグ",[14]),
 F("性別：女"),
-F("年齢：第一章では未出（見た目はおばあさんだが声は若い女性）",[14]),
+F("年齢：第一章では未出（声は老婆のよう。主人公からは「デカいおばさん」と呼ばれる）",[14]),
 F("所属：なし。沼地に住む",[14]),
 F("職業・立場：魔女。「沼地の魔女」と呼ばれる",[14])
 ],
@@ -667,7 +716,7 @@ F("職業・立場：魔女。「沼地の魔女」と呼ばれる",[14])
 F("初登場：1-13",[14])
 ],
 "外見":[
-F("灰色の長い髪に灰色のローブ。部屋は本と実験器具で埋まっている",[14])
+F("全身を黒い布に覆われた巨大な体躯。土気色の顔をしていて、大量の宝石を身に付けている",[14])
 ],
 "性格・内面":[ F("第一章では未出")],
 "嗜好":[ F("第一章では未出")],
@@ -813,13 +862,13 @@ feat:[ F("コルトゥーラを守る大国",[11]) ]}
 { id:"chara", icon:"💁", name:"キャラ", kind:"chara", items:[] },
 { id:"group", icon:"👥", name:"団体", items:[
 { title:"八皇一鬼", facts:[ F("属性神王級の9人の呼称",[10])]},
-{ title:"宮廷救護班", facts:[ F("コルトゥーラの城の救護を担当する組織。ジーナが班長",[6])]},
+{ title:"宮廷救護班", facts:[ F("コルトゥーラの城の救護を担当する組織。ジーナが救護長",[6])]},
 { title:"黒翼の医師団", facts:[
 F("ジーナが所属していたとされる集団。黒いナース服を着る",[6]),
 F("主人公は黒いナース服がこの医師団の制服ではないかと疑っている",[20])
 ]},
 { title:"シード・アソシエイツ", facts:[ F("ジーナが口にした名前",[6])]},
-{ title:"ブルースカイキャラバン 超晴天行商", facts:[ F("団体名のみ登場",[18])]}
+{ title:"超晴天行商", facts:[ F("団体名のみ登場",[18])]}
 ]},
 { id:"term", icon:"🖋", name:"用語集", kind:"term", items:[
 { title:"タイプ", facts:[ F("能力の属性。グラス（植物）、フレア（炎）、アクア（水）、シャドー（闇）、ホーリー（光）、ウィンド（風）、サンダー（雷）、グランド（大地）の8種類",[8])], debut:"1-7", debutSrc:[8]},
@@ -899,7 +948,7 @@ F("膨大な魔力を消費するが、一瞬だけ空を飛んで姿を消す�
 ]},
 { title:"大地からの暴君（バレイア・アサシーナ）― リーダーの能力", facts:[
 F("読み：バレイア・アサシーナ",[25]),
-F("土の動物を操る。土シャチで相手を飲み込む",[22,25])
+F("土を動物の形に変えて攻撃する。土シャチで相手を飲み込む",[22,25])
 ]},
 { title:"召喚（サモン）について", facts:[ F("召喚獣を呼び出すには、術者と召喚獣の魔力量が釣り合っている必要がある",[11])]},
 { title:"魔力の爆発", facts:[ F("魔力を集中させて全方向に放出すると、魔力そのものが爆発する。効率が悪く消費が大きい",[26])]}
@@ -939,9 +988,9 @@ F("第一章はURL/33/（表示「32」）で完結する",[33])
 {when:"物語開始（前世）", what:"高校2年生の夏休み、主人公が川で溺れて死ぬ", s:[1], o:70},
 {when:"1日目", what:"異世界で目覚め、襲撃者の男を倒し、城で目覚める", s:[2,3,4], o:80},
 {when:"1日目の夜", what:"エイリーがお別れを言いに来る", s:[5], o:90},
-{when:"2日目", what:"エイリーが1週間残ることが決まり、ジーナが新メイドになる", s:[6,7], o:100},
+{when:"2日目", what:"エイリーが1週間残ることが決まる。救護長のジーナが現れる", s:[6,7], o:100},
 {when:"4日目", what:"王族で朝食し、能力の説明が進む", s:[9], o:110},
-{when:"5日目", what:"雨の日の訓練。カリーノ登場", s:[12], o:120},
+{when:"5日目", what:"カリーノが連れてこられ、キスと能力コピーを試す", s:[12], o:120},
 {when:"7日目", what:"城が12人に襲撃される。戦いの末に勝利する", s:[15], o:130},
 {when:"8日目", what:"襲撃者を捕らえ、3日間の準備期間に入る", s:[29], o:140},
 {when:"準備期間3日間", what:"城の手伝いと旅の準備", s:[30,31,32], o:150},
@@ -957,13 +1006,13 @@ var EPISODES = [
 [3,"キスをきっかけにピンクの空間で謎の子どもと出会い、腕とキャンディーを授かる。キャンディーの力で男を倒す。"],
 [4,"城で目覚めた主人公は、鏡を見て自分の体が男の娘だと気づく。"],
 [5,"メイドのエイリーがお別れを言いに来る。主人公は自分が王子アルジェント・パーチェだと知る。"],
-[6,"エイリーは1週間だけ残ることに。新メイドのジーナが現れ、キスで新しいキャンディーを得る。"],
+[6,"エイリーは1週間だけ残ることに。宮廷救護班の救護長ジーナが自己紹介し、キスを試みる。"],
 [7,"朝食の席で、エイリーが1週間残りパーチェの能力を調べることが決まる。"],
 [8,"エイリーがタイプとクラスを説明する。自分がナインのサモンだと明かす。"],
 [9,"王族で朝食。主人公はキスでコピーする能力を両親に話し、受け入れられる。"],
 [10,"エイリーがランクを説明。世界の能力者の分布と八皇一鬼の存在が語られる。"],
 [11,"広場で能力の訓練。エイリーの召喚獣を初めて見る。ウサギを助ける。"],
-[12,"雨の日の室内訓練。カリーノとキスして能力をコピーし、透明化を試す（キスの場面は本文では伏せられている）。コピー能力の仕組みが見えてくる。"],
+[12,"部屋でエイリーがカリーノを連れてくる。カリーノとキスして能力をコピーし、透明化を試す（キスの場面は本文では伏せられている）。能力について話す場面。"],
 [13,"キャンディーの再生の仕組みが分かる。エイリーの過去が語られる。"],
 [14,"魂年齢と世界の広さが語られる。沼地の魔女ドルヴィが登場。"],
 [15,"城に12人の襲撃者が現れる。能力の総整理と戦いの始まり。"],
@@ -1373,7 +1422,7 @@ F2("『操獣機巧』を使うと歯車の装甲が体を覆う",[59])
 ]);
 addIF("ability", "操獣機巧（ベースティア・フェローチェ）― エイリーの能力", "facts", [
 F2("異空間にものを入れておくこともできる",[45]),
-F2("パーチェが使う『操獣機巧』（読み：インパクト）では、二枚の巨大な歯車が展開して対象を破壊する",[59])
+F2("パーチェが使う『操獣機巧』【破】では、二枚の巨大な歯車が展開して対象を破壊する",[59])
 ]);
 addIF("ability", "絶望の終末（パンターノ・シン・ファンド）― ドルヴィの能力", "facts", [
 F2("パーチェが使うと、巨大な泥の手（アーム）で相手を握ったり叩き潰したりする",[50])
@@ -1384,16 +1433,8 @@ F2("回復魔法として使われ、傷やアザを目の前で消していく"
 addIF("ability", "困った探偵鳥（スピア・パッパガッロ）― カリーノの能力", "facts", [
 F2("パーチェが使うと、一瞬だけ姿を消して飛ぶことができる",[52])
 ]);
-addItem("ability", { title:"エレナの能力（蓮）― 能力名は未出", facts:[
-F2("オオオニバスを大量に出し、ボートのように操縦したり、ちょっとだけ飛んだりできる",[43]),
-F2("火力や回復能力はないが、コストパフォーマンスがいいと評される",[58]),
-F2("エレナは『魔力のタンクみたいなもの』で、霊獣級のわりには莫大なエネルギーを持っている",[59])
-]});
 addItem("ability", { title:"大男の能力（風）― 能力名は未出", facts:[
 F2("風・爆風・竜巻を操り、指先から風を出す",[49])
-]});
-addItem("ability", { title:"イノの能力（土のイノシシ）― 能力名は未出", facts:[
-F2("土の中から巨大なイノシシを出す。走行に魔力を使う",[64])
 ]});
 
 /* ---------- 伏線 ---------- */
@@ -1413,8 +1454,9 @@ F2("ポセイドンタイムズの報道で、パーチェとエイリーが『�
 /* ---------- 作品そのものの設定 ---------- */
 addIF("meta", "作品そのものの設定", "facts", [
 F2("第二章はセーレットを舞台とし、URL/66/（表示『26』）で完結する",[66]),
-F2("盗賊団の名前は『ビンボーン』『ボンビーン』の表記ゆれがある",[41])
 ]);
+
+(function(){ var it = findItem("ability", "大地からの暴君（バレイア・アサシーナ）― リーダーの能力"); if(it) it.facts.push(F2("土をイノシシの形に変えて出すこともできる。走行に魔力を使う",[64]));})();
 
 /* ---------- 年表 ---------- */
 (function(){ var tl = findItem("timeline", "年表"); if(!tl ||!tl.timeline) return;
@@ -1465,7 +1507,7 @@ EPISODES.push(
 /* ---------- 幕間のデータ追加（1a／2a） ---------- */
 function F1a(t, s){ return F(t, s, "1a"); }
 function F2a(t, s){ return F(t, s, "2a"); }
-ABILITIES["それいけ友達大行進"] = { reading:"オルディートンロトゥ", segs:[["それいけ友達","オルディートン"],["大行進","ロトゥ"]], user:"エレナ・コリアス", type:"グラス", cls:"ウィザード", chapter:"2a", copied:true };
+ABILITIES["それいけ友達大行進"] = { reading:"オルディートンロトゥ", segs:[["それいけ",""],["友達大行進","オルディートンロトゥ"]], user:"エレナ・コリアス", type:"グラス", cls:"ウィザード", chapter:2, copied:true};
 EPISODES.push(
 [67,"エイリーとパーチェが番組『ゴーマグ』を観る。先週判明した試食男爵の過去と、旧四天王のつながりを推理する。","2a"],
 [68,"ゴーマグ本編。試食男爵が万引きをしていたことが分かり、マオが泣き崩れる。","2a"],
@@ -1481,35 +1523,34 @@ basic:[ F1a("初出：1a-2",[35])],
 feat:[ F1a("大剣豪・縹疾風丸（はなだはやてまる）の国。リベロは風の谷の出身で、縹疾風丸に師事していた",[35])]});
 addItem("group", { title:"ビンボーン", chapter:"2a", facts:[
 F2a("作中番組『ゴーマグ』に登場する敵の組織。ネオ四天王と旧四天王がいる",[67,68]),
-F2a("2a-1では「ボンビーン」と表記されている（本文の表記揺れ）",[67]),
 F2a("ネオ四天王は、生き残るためなら手段を選ばないと宣言する",[68]),
 F2a("旧四天王は4名で、みんな強力な能力者だった：オバタリアーノ・ワリビキマチス、コウエンノミズ・ウマインジャ、サンプル・ホシガリーノ、ドブサライス・コゼニスキー",[67]),
 F2a("旧四天王はみんな辛い過去があって悪事に身を染めていたが、「これだけは絶対しない」という彼らなりの正義を持っていた",[69])
 ]});
-addItem("term", { title:"ゴーマグ", chapter:"2a", facts:[
+addItem("term", { title:"ゴーマグ", chapter:"2a", debut:"2a-1", debutSrc:[67], facts:[
 F2a("作中で放送されている番組。マオ率いるゴーマグチームとビンボーン軍団の戦いを描く",[69]),
 F2a("掛け声は「絶対セレブ、ゴーゴーマグナム！」",[67]),
 F2a("パーチェはセーレットの城を出る少し前あたりから観るようになった",[68])
 ]});
-addItem("term", { title:"ヤン・マオ", chapter:"2a", facts:[
+addItem("term", { title:"ヤン・マオ", chapter:"2a", debut:"2a-2", debutSrc:[68], facts:[
 F2a("番組『ゴーマグ』の主演女優。赤いドレスに身を包んでいる",[68]),
 F2a("エイリーと歳があまり変わらない",[68]),
 F2a("パーチェは「ヤンヤンちゃん」と呼んで応援する",[68]),
 F2a("決めぜりふは「たとえ貧乏だろうとも、この心だけは絶対セレブ！」",[68])
 ]});
-addItem("term", { title:"試食男爵", chapter:"2a", facts:[
+addItem("term", { title:"試食男爵", chapter:"2a", debut:"2a-1", debutSrc:[67], facts:[
 F2a("ビンボーンのネオ四天王の一人。スーパーの試食を食べる人",[67,68]),
 F2a("防御は『鉄壁鉄板（ホットプレートガード）』。前にホットプレートを出して攻撃を防ぐ",[68]),
 F2a("実は万引きをしていたことが判明する",[68])
 ]});
-addItem("term", { title:"アクアガゼル", chapter:"2a", facts:[
+addItem("term", { title:"アクアガゼル", chapter:"2a", debut:"2a-5", debutSrc:[71], facts:[
 F2a("野生の霊獣。妖精級とみられ、近くに能力者がいない野生の個体がいる",[71]),
 F2a("親子が不干渉地帯に現れ、パーチェたちと戦った",[71,72,73,74])
 ]});
-addItem("term", { title:"不干渉地帯宿", chapter:"2a", facts:[
+addItem("term", { title:"不干渉地帯宿", chapter:"2a", debut:"2a-4", debutSrc:[70], facts:[
 F2a("不干渉地帯の道沿いにある宿。パーチェたちが泊まっていた宿もその一つ",[70])
 ]});
-addItem("term", { title:"ポセイドンネット", chapter:"2a", facts:[
+addItem("term", { title:"ポセイドンネット", chapter:"2a", debut:"2a-3", debutSrc:[69], facts:[
 F2a("報道媒体。ビーバッグを倒した時に、パーチェとエイリーを『美少女二人』と報じた",[69])
 ]});
 addItem("world", { title:"不干渉地帯", chapter:"2a", facts:[
@@ -1518,10 +1559,19 @@ F2a("基本的には何もない荒涼とした荒れ地が続き、治安も悪
 F2a("国と国を結ぶ一本道が敷かれていて、そこから外れなければそれなりの安全が保証される。その道は先人達が歩いた跡の獣道にすぎない",[70]),
 F2a("主を亡くした霊獣がさまよっていることも稀にある",[70])
 ]});
-addItem("ability", { title:"それいけ友達大行進（オルディートンロトゥ）― エレナの能力", ruby:"それいけ友達大行進", chapter:"2a", facts:[
-F2a("読み：オルディートンロトゥ",[]),
-F2a("オオオニバス（蓮）を大量に出す。ボートのように操縦したり、足場にしたりできる",[43,72]),
+addItem("ability", { title:"それいけ友達大行進（オルディートンロトゥ）― エレナの能力", ruby:"それいけ友達大行進", chapter:2, facts:[
+F2("読み：オルディートンロトゥ",[56]),
+F2("オオオニバスを大量に出し、ボートのように操縦したり、ちょっとだけ飛んだりできる",[43]),
+F2("火力や回復能力はないが、コストパフォーマンスがいいと評される",[58]),
+F2("エレナは『魔力のタンクみたいなもの』で、霊獣級のわりには莫大なエネルギーを持っている",[59]),
+F2a("オオオニバスを足場にしたりもできる",[72]),
 F2a("パーチェがコピーした姿は、エレナと同じサロペットパンツを基調とした服装になる。火力はあまりないものの、駆動力を誇る",[71])
+]});
+var HA_TERM_TITLE = String.fromCharCode(0x3010) + "破" + String.fromCharCode(0x3011);
+addItem("term", { title: HA_TERM_TITLE, debut:"2-19", debutSrc:[59], facts:[
+F2("『操獣機巧』に付く印。破の読みはインパクト",[59]),
+F2("二人で同じ能力を使って大技を叩き込む、という意味合いの技。ただしパーチェがノリと勢いで言っているだけのもの",[59]),
+F2("この形では、二枚の巨大な歯車が展開して対象を破壊する",[59])
 ]});
 addItem("foreshadow", { title:"幕間2終了時点の伏線・不明点", chapter:"2a", facts:[
 F2a("『リストラ仮面』と旧四天王の『コウエンノミズ・ウマインジャ』が同一人物ではないかというパーチェの推測",[67]),
@@ -1574,17 +1624,17 @@ EPISODES.push(
 [38,"男達は約束通り城で働き始める。プリートはタツに、エイリーが一人で処理していた事務仕事を引き継がせる。","1a"],
 [39,"リベロとイノが能力増強剤『LUCKY』について語る。渡した男の言葉と、ドルヴィの水晶玉が示される。幕間1完。","1a"]
 );
-addItem("term", { title:"LUCKY", chapter:"1a", facts:[
+addItem("term", { title:"LUCKY", chapter:"1a", debut:"1a-2", debutSrc:[35], facts:[
 F1a("能力増強剤。小さな錠剤で、ラムネ菓子みたいに甘い",[39]),
 F1a("自身の能力を一ランク程度増強させるものらしい。効果は一ヶ月ほど続き、副作用もないという",[39]),
 F1a("イノ達は服用して霊獣級相当の魔力を得た。元は全員が妖精級だった",[39]),
 F1a("男達が飲まされたもので、幕間1の時点では効果が切れ始めていた",[35,36]),
 F1a("渡したのは、トライカ語訛りのウルー語で話しかけてきた若い男",[39])
 ]});
-addItem("term", { title:"ウルー語", chapter:"1a", facts:[
+addItem("term", { title:"ウルー語", chapter:"1a", debut:"1a-6", debutSrc:[39], facts:[
 F1a("ウルーで話される言語。イノ達はウルー語しか分からない",[39])
 ]});
-addItem("term", { title:"城の採用試験", chapter:"1a", facts:[
+addItem("term", { title:"城の採用試験", chapter:"1a", debut:"1a-3", debutSrc:[36], facts:[
 F1a("リベロとリーダーの決闘の呼び名。リーダーが勝てば、十二人全員を城で働かせる条件だった",[36])
 ]});
 addItem("ability", { title:"豊穣の果実（フェルティリータ）― プリートの能力", ruby:"豊穣の果実", chapter:"1a", facts:[
@@ -1737,8 +1787,8 @@ if(key === "hapirori-ledger-memos-v1" || key === "hapirori-ledger-favs-v1") comm
 }
 var MEMOS = loadJSON("hapirori-ledger-memos-v1", {});
 var FAVS = loadJSON("hapirori-ledger-favs-v1", []);
-var COLLAPSED = {};
-function collapseBtnHTML(key){ var c = !!COLLAPSED[key]; return '<button type="button" class="collapsebtn" data-collapse="' + esc(key) + '" aria-expanded="' + (c ? "false" : "true") + '">' + (c ? "開く ▷" : "畳む ▽") + '</button>'; }
+var OPENED = {};
+function collapseBtnHTML(key){ var c = !OPENED[key]; return '<button type="button" class="collapsebtn" data-collapse="' + esc(key) + '" aria-expanded="' + (c ? "false" : "true") + '">' + (c ? "開く ▷" : "畳む ▽") + '</button>'; }
 
 /* ---------- 元に戻す（undo） ---------- */
 var UNDO_STACK = [];
@@ -1823,7 +1873,9 @@ closeSheet(); render(); showToast("メモを保存しました");
 document.addEventListener("click", function(e){
 var t = e.target;
 var cb = t.closest ? t.closest("[data-collapse]") : null;
-if(cb){ var ckey = cb.getAttribute("data-collapse"); if(COLLAPSED[ckey]) delete COLLAPSED[ckey]; else COLLAPSED[ckey] = 1; render(); return; }
+if(cb){ var ckey = cb.getAttribute("data-collapse"); if(OPENED[ckey]) delete OPENED[ckey]; else OPENED[ckey] = 1; render(); return; }
+var sb = t.closest ? t.closest("[data-sort]") : null;
+if(sb){ SORT_MODE = sb.getAttribute("data-sort"); render(); return; }
 var fb = t.closest ? t.closest("[data-fav]") : null;
 if(fb){
 var key = fb.getAttribute("data-fav");
@@ -1858,12 +1910,30 @@ box.innerHTML = '<div class="favbox"><h4 class="subhead">最近見た項目</h4>
 function renderUnknown(){
 var box = document.getElementById("unknownBox");
 if(!box) return;
-var rows = [];
+function isPlaceholderOnly(t){
+var i = t.indexOf("：");
+var rest = i >= 0 ? t.slice(i + 1) : t;
+return /^(第[一二三]章では|1a章では|2a章では|本編では|作中では)?(未出|不明)[。]?$/.test(rest.trim());
+}
+function labelOf(t){
+var i = t.indexOf("：");
+return i >= 0 ? t.slice(0, i) : "その他";
+}
+var order = [], grouped = {}, contents = [];
+function pushContent(key, label, text){ contents.push({ key:key, label:label, text:text }); }
+function pushPlaceholder(key, label, text){
+if(!grouped[key]){ grouped[key] = { key:key, label:label, labels:[] }; order.push(grouped[key]); }
+var lb = labelOf(text);
+if(grouped[key].labels.indexOf(lb) < 0) grouped[key].labels.push(lb);
+}
 DATA.charas.forEach(function(ch){
 if(chRank(itemChapter(ch)) > chRank(displayChapter)) return;
-if((ch.badge.ability || "").indexOf("未出") >= 0) rows.push({ key: "chara:" + ch._id, label: ch.name, text: "能力名は未出" });
+if((ch.badge.ability || "").indexOf("未出") >= 0) pushContent("chara:" + ch._id, ch.name, "能力名は未出");
 ch.sections.forEach(function(sec){ visibleFacts(sec.facts).forEach(function(f){
-if(f.t.indexOf("未出") >= 0 || f.t.indexOf("不明") >= 0) rows.push({ key: "chara:" + ch._id, label: ch.name, text: f.t });
+if(f.t.indexOf("未出") >= 0 || f.t.indexOf("不明") >= 0){
+if(isPlaceholderOnly(f.t)) pushPlaceholder("chara:" + ch._id, ch.name, f.t);
+else pushContent("chara:" + ch._id, ch.name, f.t);
+}
 }); });
 });
 DATA.cats.forEach(function(cat){
@@ -1873,17 +1943,22 @@ if(chRank(itemChapter(it)) > chRank(displayChapter)) return;
 var key = "item:" + cat.id + ":" + (it.title || "");
 [it.facts, it.basic, it.feat].forEach(function(list){
 if(list) visibleFacts(list).forEach(function(f){
-if(f.t.indexOf("未出") >= 0 || f.t.indexOf("不明") >= 0) rows.push({ key: key, label: it.title, text: f.t });
+if(f.t.indexOf("未出") >= 0 || f.t.indexOf("不明") >= 0){
+if(isPlaceholderOnly(f.t)) pushPlaceholder(key, it.title, f.t);
+else pushContent(key, it.title, f.t);
+}
 });
 });
 });
 });
+var rows = order.map(function(g){ return { key:g.key, label:g.label, text:"未出・不明の欄：" + g.labels.join("、") }; }).concat(contents);
 if(!rows.length){ box.innerHTML = ""; return; }
-var lis = rows.slice(0, 40).map(function(r){
+var lis = rows.slice(0, 60).map(function(r){
 return '<p class="overall"><a class="namelink" data-jump="' + esc(r.key) + '">' + esc(r.label) + '</a>：' + esc(r.text) + '</p>';
 }).join("");
 box.innerHTML = '<details class="unknownbox"><summary>まだ決まっていない設定（未出・不明） ' + rows.length + '件</summary>' + lis + '</details>';
 }
+
 /* ---------- 話ページ（話ごとの逆引き） ---------- */
 var EP_SEL = null;
 function episodeDetailHTML(n){
@@ -2072,7 +2147,7 @@ function esc(s){ return String(s == null ? "" : s).replace(/&/g,"&amp;").replace
 function srcBtns(list){
 if(!list || !list.length) return "";
 var seen = {}, out = "";
-list.forEach(function(n){ if(!seen[n]){ seen[n] = 1; out += '<a class="src" href="' + SRC(n) + '" target="_blank" rel="noopener">' + esc(epLabel(n)) + '</a>'; } });
+list.forEach(function(n){ if(!seen[n]){ seen[n] = 1; out += '<a class="src" href="' + SRC(n) + '" target="_blank" rel="noopener">' + esc(epShort(n)) + '</a>'; } });
 return out;
 }
 function marks(f){
@@ -2231,6 +2306,7 @@ return '<div class="backlinks"><h4 class="subhead">この項目に触れてい�
 }
 function jumpTo(target){
 recordRecent(target);
+OPENED[target] = 1;
 var parts = target.split(":");
 setView("browse");
 if(parts[0] === "chara"){
@@ -2264,6 +2340,7 @@ function copyRow(rubyKey){
 if(!ABILITIES[rubyKey]) return "";
 var h = '<div class="copyrow"><button type="button" class="copybtn" data-copy="' + esc(abilityCopyText(rubyKey, false)) + '">📋 ルビをコピー</button>';
 if(ABILITIES[rubyKey].copied) h += '<button type="button" class="copybtn" data-copy="' + esc(abilityCopyText(rubyKey, true)) + '">📋 パーチェがコピーした形でコピー</button>';
+if(ABILITIES[rubyKey].ha) h += '<button type="button" class="copybtn" data-copy="' + esc(abilityCopyText(rubyKey, false, true)) + '">📋 【破】の形でコピー</button>';
 return h + '</div>';
 }
 function badgeRow(b){
@@ -2282,7 +2359,7 @@ RICH_SELF = "item:" + cat.id + ":" + (item.title || "");
 var h = '<article class="card' + (item.wide ? ' wide' : '') + '">';
 h += '<h3 data-anchor="' + esc(item.title || "") + '">' + (showCat ? '<span class="cat-tag">' + cat.icon + ' ' + esc(cat.name) + '</span>' : '') + rubyOnly(item.title || "") + itemMarks(item) + '</h3>';
 if(edit) h += itemTools(item);
-if(!edit) h += '<div class="cardtools">' + favBtnHTML("item:" + cat.id + ":" + (item.title || "")) + collapseBtnHTML("item:" + cat.id + ":" + (item.title || "")) + '</div><div class="cardbody"' + (COLLAPSED["item:" + cat.id + ":" + (item.title || "")] ? ' style="display:none"' : '') + '>';
+if(!edit) h += '<div class="cardtools">' + favBtnHTML("item:" + cat.id + ":" + (item.title || "")) + collapseBtnHTML("item:" + cat.id + ":" + (item.title || "")) + '</div><div class="cardbody"' + (!OPENED["item:" + cat.id + ":" + (item.title || "")] ? ' style="display:none"' : '') + '>';
 if(item.ruby) h += copyRow(item.ruby);
 if(item.timeline){
 if(!edit){
@@ -2317,7 +2394,7 @@ h += '<ul class="ep-list">';
 visibleFacts(item.facts).forEach(function(f){
 var n = (f.s && f.s[0]) || 0;
 var label = n ? epLabel(n) + (n === 33 ? "（第一章 完）" : (n === 39 ? "（幕間1 完）" : (n === 66 ? "（第二章 完）" : (n === 74 ? "（幕間2 完）" : "")))) : "話";
-h += '<li><span class="ep-no">' + (n ? '<a class="src" href="' + SRC(n) + '" target="_blank" rel="noopener">' + esc(epLabel(n)) + '</a>' : '') + '</span><p><span class="ep-title">' + esc(label) + '：</span>' + (edit ? esc(factDisplayText(f)) : richText(factDisplayText(f))) + marks(f) + (edit ? factTools(f) : '') + '</p></li>';
+h += '<li><span class="ep-no">' + (n ? '<a class="src" href="' + SRC(n) + '" target="_blank" rel="noopener">' + esc(epShort(n)) + '</a>' : '') + '</span><p><span class="ep-title">' + esc(label) + '：</span>' + (edit ? esc(factDisplayText(f)) : richText(factDisplayText(f))) + marks(f) + (edit ? factTools(f) : '') + '</p></li>';
 });
 h += '</ul>';
 if(edit) h += addFactBtn(item._id + "|facts", "あらすじを追加");
@@ -2327,6 +2404,7 @@ h += foreshadowHTML(item);
 h += factLis(item.facts || [], edit);
 if(edit) h += addFactBtn(item._id + "|facts");
 }
+if(!edit) h += recOriginHTML(item);
 if(!edit) h += memoHTML("item:" + cat.id + ":" + (item.title || ""));
 if(!edit) h += backlinksHTML("item:" + cat.id + ":" + (item.title || ""));
 if(!edit) h += '</div>';
@@ -2391,7 +2469,7 @@ var list = Object.keys(eps).map(Number).sort(function(a, b){ return a - b; });
 if(!list.length) return "";
 var last = list[list.length - 1];
 var chips = list.map(function(n){ return '<button type="button" class="epchip" data-ep="' + n + '">' + epShort(n) + '</button>'; }).join("、");
-return '<h4 class="subhead">登場話（出典とあらすじから自動集計）</h4><p class="overall">最終登場：<button type="button" class="epchip" data-ep="' + last + '">' + epLabel(last) + '</button>（計' + list.length + '話）</p><p>' + chips + '</p>';
+return '<h4 class="subhead">登場話（出典とあらすじから自動集計）</h4><p class="overall">最終登場：<button type="button" class="epchip" data-ep="' + last + '">' + epShort(last) + '</button>（計' + list.length + '話）</p><p>' + chips + '</p>';
 }
 function charaJump(name, label){
 var ch = null;
@@ -2466,11 +2544,12 @@ RICH_SELF = "item:" + cat.id + ":" + (item.title || "");
 var h = '<article class="card">';
 h += '<h3 data-anchor="' + esc(item.title || "") + '">' + (showCat ? '<span class="cat-tag">' + cat.icon + ' ' + esc(cat.name) + '</span>' : '') + rubyOnly(item.title || "") + itemMarks(item) + '</h3>';
 if(edit) h += itemTools(item);
-if(!edit) h += '<div class="cardtools">' + favBtnHTML("item:" + cat.id + ":" + (item.title || "")) + collapseBtnHTML("item:" + cat.id + ":" + (item.title || "")) + '</div><div class="cardbody"' + (COLLAPSED["item:" + cat.id + ":" + (item.title || "")] ? ' style="display:none"' : '') + '>';
+if(!edit) h += '<div class="cardtools">' + favBtnHTML("item:" + cat.id + ":" + (item.title || "")) + collapseBtnHTML("item:" + cat.id + ":" + (item.title || "")) + '</div><div class="cardbody"' + (!OPENED["item:" + cat.id + ":" + (item.title || "")] ? ' style="display:none"' : '') + '>';
 h += '<h4 class="subhead">基本情報</h4>' + factLis(item.basic || [], edit);
 if(edit) h += addFactBtn(item._id + "|basic");
 h += '<h4 class="subhead">特徴</h4>' + factLis(item.feat || [], edit);
 if(edit) h += addFactBtn(item._id + "|feat");
+if(!edit) h += recOriginHTML(item);
 if(!edit) h += memoHTML("item:" + cat.id + ":" + (item.title || ""));
 if(!edit) h += backlinksHTML("item:" + cat.id + ":" + (item.title || ""));
 if(!edit) h += '</div>';
@@ -2483,10 +2562,11 @@ RICH_SELF = "item:" + cat.id + ":" + (item.title || "");
 var h = '<article class="card">';
 h += '<h3 data-anchor="' + esc(item.title || "") + '">' + (showCat ? '<span class="cat-tag">' + cat.icon + ' ' + esc(cat.name) + '</span>' : '') + rubyOnly(item.title || "") + itemMarks(item) + '</h3>';
 if(edit) h += itemTools(item);
-if(!edit) h += '<div class="cardtools">' + favBtnHTML("item:" + cat.id + ":" + (item.title || "")) + collapseBtnHTML("item:" + cat.id + ":" + (item.title || "")) + '</div><div class="cardbody"' + (COLLAPSED["item:" + cat.id + ":" + (item.title || "")] ? ' style="display:none"' : '') + '>';
+if(!edit) h += '<div class="cardtools">' + favBtnHTML("item:" + cat.id + ":" + (item.title || "")) + collapseBtnHTML("item:" + cat.id + ":" + (item.title || "")) + '</div><div class="cardbody"' + (!OPENED["item:" + cat.id + ":" + (item.title || "")] ? ' style="display:none"' : '') + '>';
 h += '<h4 class="subhead">意味</h4>' + factLis(item.facts || [], edit);
 if(edit) h += addFactBtn(item._id + "|facts");
 h += '<h4 class="subhead">初出</h4><div class="debut-line">' + esc(item.debut || "") + srcBtns(item.debutSrc) + '</div>';
+if(!edit) h += recOriginHTML(item);
 if(!edit) h += memoHTML("item:" + cat.id + ":" + (item.title || ""));
 if(!edit) h += backlinksHTML("item:" + cat.id + ":" + (item.title || ""));
 if(!edit) h += '</div>';
@@ -2501,7 +2581,7 @@ if(!edit && !q) h += '<div class="cardtools">' + favBtnHTML("chara:" + ch._id) +
 h += '<h3>' + (showCat ? '<span class="cat-tag">💁 キャラ</span>' : '') + rubyOnly(ch.name) + itemMarks(ch) + '</h3>';
 if(edit) h += '<div class="itemtools"><button type="button" class="ebtn" data-act="edit-chara" data-iid="' + esc(ch._id) + '">キャラを編集</button>'
 + '<button type="button" class="ebtn danger" data-act="del-item" data-iid="' + esc(ch._id) + '">キャラを削除</button></div>';
-if(!edit && !q) h += '<div class="cardbody"' + (COLLAPSED["chara:" + ch._id] ? ' style="display:none"' : '') + '>';
+if(!edit && !q) h += '<div class="cardbody"' + (!OPENED["chara:" + ch._id] ? ' style="display:none"' : '') + '>';
 var any = false;
 ch.sections.forEach(function(sec){
 var facts = sec.facts;
@@ -2524,6 +2604,7 @@ h += factLis(q ? facts : sec.facts, edit);
 }
 if(edit) h += addFactBtn(ch._id + "|" + sec.h);
 });
+if(!edit && !q) h += recOriginHTML(ch);
 if(!edit && !q) h += memoHTML("chara:" + ch._id);
 if(!edit && !q) h += appearanceHTML(ch);
 if(!edit && !q) h += backlinksHTML("chara:" + ch._id);
@@ -2554,7 +2635,21 @@ el.textContent = "表示範囲：第一章まで ― 第一章の内容のみ表
 }
 
 /* ---------- 画面状態と描画 ---------- */
-var view = "browse";           /* browse | search | edit */
+var view = "browse";
+var SORT_MODE = "order";
+function minEpOfLists(lists){ var m = 9999; lists.forEach(function(list){ (list || []).forEach(function(f){ (f.s || []).forEach(function(n){ if(n < m) m = n; }); }); }); return m; }
+function itemSortKey(it){ return minEpOfLists([it.facts, it.basic, it.feat, it.timeline]); }
+function charaSortKey(ch){ var m = 9999; ch.sections.forEach(function(sec){ sec.facts.forEach(function(f){ (f.s || []).forEach(function(n){ if(n < m) m = n; }); }); }); return m; }
+function sortItems(list, titleFn, keyFn){
+if(SORT_MODE === "gojuon") return list.slice().sort(function(a, b){ return titleFn(a).localeCompare(titleFn(b), "ja"); });
+if(SORT_MODE === "debut") return list.slice().sort(function(a, b){ var d = keyFn(a) - keyFn(b); return d !== 0 ? d : titleFn(a).localeCompare(titleFn(b), "ja"); });
+return list;
+}
+function sortBarHTML(){
+function chip(mode, label){ return '<button type="button" class="tl-chip" data-sort="' + mode + '" aria-selected="' + (SORT_MODE === mode ? "true" : "false") + '">' + label + '</button>'; }
+return '<div class="tl-filter" role="tablist" aria-label="項目の並び替え"><span class="sortlabel">並び替え：</span>' + chip("order", "登録順") + chip("gojuon", "五十音順") + chip("debut", "登場順") + '</div>';
+}
+           /* browse | search | edit */
 var activeId = "country";
 var editActiveId = "country";
 var activeChara = null;        /* chara _id (browse) */
@@ -2596,9 +2691,10 @@ h += '<div class="cards">' + charaPageHTML(ch, false, edit, null) + '</div>';
 return h;
 }
 }
+if(!edit) h += sortBarHTML();
 if(!edit && !activeChara) h += relationsHTML();
 h += '<div class="cards">';
-cat.items.forEach(function(ch){
+sortItems(cat.items, function(c){ return c.name; }, charaSortKey).forEach(function(ch){
 if(!edit && !isItemVisible(ch)) return;
 if(edit && chRank(itemChapter(ch)) > chRank(displayChapter)) return;
 h += '<button type="button" class="card chara-link" data-chara="' + esc(ch._id) + '">'
@@ -2613,7 +2709,8 @@ return h;
 var visibleItems = edit ? cat.items.filter(function(it){ return chRank(itemChapter(it)) <= chRank(displayChapter); }) : cat.items.filter(function(it){ return isItemVisible(it); });
 /* あらすじ・年表など facts が特殊な項目は常に表示（中身は visibleFacts で絞る） */
 if(cat.synopsis || cat.id === "timeline"){ visibleItems = cat.items.filter(function(it){ return chRank(itemChapter(it)) <= chRank(displayChapter); }); }
-h += '<div class="cards">' + visibleItems.map(function(it){ return itemCard(cat, it, false, edit); }).join("") + '</div>';
+if(!edit) h += sortBarHTML();
+h += '<div class="cards">' + (edit ? visibleItems : sortItems(visibleItems, function(it){ return it.title || ""; }, itemSortKey)).map(function(it){ return itemCard(cat, it, false, edit); }).join("") + '</div>';
 if(edit) h += '<button type="button" class="addbtn" data-act="add-item" data-cat="' + esc(cat.id) + '">＋ 項目を追加（' + esc(cat.name) + '）</button>';
 return h;
 }
@@ -2687,8 +2784,11 @@ var viewEls = { browse: document.getElementById("viewBrowse"), search: document.
 var tabBtns = { browse: document.getElementById("tabBrowse"), search: document.getElementById("tabSearch"), edit: document.getElementById("tabEdit"), ability: document.getElementById("tabAbility"), ep: document.getElementById("tabEp") };
 var abilityContentEl = document.getElementById("abilityContent");
 function renderAbilities(){
-var h = "";
-Object.keys(ABILITIES).forEach(function(name){
+var h = sortBarHTML();
+var abilityNames = Object.keys(ABILITIES);
+if(SORT_MODE === "gojuon") abilityNames.sort(function(a, b){ return (readingOf(a) || a).localeCompare(readingOf(b) || b, "ja"); });
+if(SORT_MODE === "debut") abilityNames.sort(function(a, b){ return chRank(ABILITIES[a].chapter) - chRank(ABILITIES[b].chapter); });
+abilityNames.forEach(function(name){
 var a = ABILITIES[name];
 if(chRank(a.chapter) > chRank(displayChapter)) return;
 var user = (chRank(displayChapter) >= 2 && a.userCh2) ? a.userCh2 : a.user;
@@ -2697,6 +2797,7 @@ h += '<article class="card"><h3>' + rubyHTML(name) + '</h3>'
 + '<span class="badge type"><b>タイプ</b><span class="val">' + esc(a.type) + '</span></span>'
 + '<span class="badge"><b>クラス</b><span class="val">' + esc(a.cls) + '</span></span></div>'
 + copyRow(name)
++ (ORIGINS[name] ? '<p class="origin">名前の由来：' + esc(ORIGINS[name]) + '</p>' : "")
 + '<p class="overall"><a class="namelink" data-jump="item:ability:' + esc(abilityItemTitle(name)) + '">🍭 能力設定で詳しく見る</a></p>'
 + '</article>';
 });
