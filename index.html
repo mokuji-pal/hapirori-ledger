@@ -1917,13 +1917,13 @@ return /^(第[一二三]章では|1a章では|2a章では|本編では|作中で
 }
 function labelOf(t){
 var i = t.indexOf("：");
-return i >= 0 ? t.slice(0, i) : "その他";
+return i >= 0 ? t.slice(0, i) : null;
 }
 var order = [], grouped = {}, contents = [];
 function pushContent(key, label, text){ contents.push({ key:key, label:label, text:text }); }
-function pushPlaceholder(key, label, text){
+function pushPlaceholder(key, label, text, fallback){
 if(!grouped[key]){ grouped[key] = { key:key, label:label, labels:[] }; order.push(grouped[key]); }
-var lb = labelOf(text);
+var lb = labelOf(text) || fallback || "その他";
 if(grouped[key].labels.indexOf(lb) < 0) grouped[key].labels.push(lb);
 }
 DATA.charas.forEach(function(ch){
@@ -1931,7 +1931,7 @@ if(chRank(itemChapter(ch)) > chRank(displayChapter)) return;
 if((ch.badge.ability || "").indexOf("未出") >= 0) pushContent("chara:" + ch._id, ch.name, "能力名は未出");
 ch.sections.forEach(function(sec){ visibleFacts(sec.facts).forEach(function(f){
 if(f.t.indexOf("未出") >= 0 || f.t.indexOf("不明") >= 0){
-if(isPlaceholderOnly(f.t)) pushPlaceholder("chara:" + ch._id, ch.name, f.t);
+if(isPlaceholderOnly(f.t)) pushPlaceholder("chara:" + ch._id, ch.name, f.t, sec.h);
 else pushContent("chara:" + ch._id, ch.name, f.t);
 }
 }); });
@@ -1941,10 +1941,11 @@ if(cat.kind === "chara") return;
 cat.items.forEach(function(it){
 if(chRank(itemChapter(it)) > chRank(displayChapter)) return;
 var key = "item:" + cat.id + ":" + (it.title || "");
-[it.facts, it.basic, it.feat].forEach(function(list){
+[[it.facts, "内容"], [it.basic, "基本情報"], [it.feat, "特徴"]].forEach(function(pair){
+var list = pair[0];
 if(list) visibleFacts(list).forEach(function(f){
 if(f.t.indexOf("未出") >= 0 || f.t.indexOf("不明") >= 0){
-if(isPlaceholderOnly(f.t)) pushPlaceholder(key, it.title, f.t);
+if(isPlaceholderOnly(f.t)) pushPlaceholder(key, it.title, f.t, pair[1]);
 else pushContent(key, it.title, f.t);
 }
 });
