@@ -390,7 +390,7 @@ var ORIGINS = {
 "大地からの暴君": "ポルトガル語の『baleia assassina』（シャチ。直訳すると『殺し屋クジラ』）に由来する名前",
 "一刃の風": "イタリア語の『ventata』（一陣の風、突風）に由来する名前",
 "豊穣の果実": "イタリア語の『fertilità』（豊穣、肥沃）に由来する名前",
-"それいけ友達大行進": "行進の掛け声を思わせる造語",
+"それいけ友達大行進": "『オルディートン』はラテン語の『ordo』（列・秩序）の仲間の言葉から、『列』の意味を付けて作った名前。『ロトゥ』はギリシャ語の『λωτός』（ハス）",
 "アルジェント・パーチェ": "『アルジェント』はイタリア語の『argento』（銀）。『パーチェ』はイタリア語の『pace』（平和）と思われる",
 "アルジェント・リベロ": "『アルジェント』はイタリア語の『argento』（銀）。『リベロ』はイタリア語の『libero』（自由な）",
 "アルジェント・プリート": "『アルジェント』はイタリア語の『argento』（銀）。『プリート』はイタリア語の『prete』（司祭）を思わせる",
@@ -2892,7 +2892,7 @@ var a = ABILITIES[name];
 if(chRank(a.chapter) > chRank(displayChapter)) return;
 var user = (chRank(displayChapter) >= 2 && a.userCh2) ? a.userCh2 : a.user;
 h += '<article class="card"><h3>' + rubyHTML(name) + '</h3>'
-+ '<div class="badges"><span class="badge"><b>術者</b><span class="val">' + esc(user) + '</span></span>'
++ '<div class="badges"><span class="badge"><b>術者</b><span class="val">' + charaJump(user) + '</span></span>'
 + '<span class="badge type"><b>タイプ</b><span class="val">' + esc(a.type) + '</span></span>'
 + '<span class="badge"><b>クラス</b><span class="val">' + esc(a.cls) + '</span></span></div>'
 + copyRow(name)
@@ -2906,7 +2906,7 @@ var namedInScope = false;
 for(var k in ABILITIES){ var ab = ABILITIES[k]; if(ab.user === u.user && chRank(ab.chapter) <= chRank(displayChapter)) namedInScope = true; }
 if(namedInScope) return;
 h += '<article class="card"><h3>' + esc(u.title) + '</h3>'
-+ '<div class="badges"><span class="badge"><b>術者</b><span class="val">' + esc(u.user) + '</span></span>'
++ '<div class="badges"><span class="badge"><b>術者</b><span class="val">' + charaJump(u.user) + '</span></span>'
 + '<span class="badge type"><b>タイプ</b><span class="val">' + esc(u.type) + '</span></span>'
 + '<span class="badge"><b>クラス</b><span class="val">' + esc(u.cls) + '</span></span></div>'
 + '<p class="overall">' + esc(u.desc) + '</p>'
@@ -3348,7 +3348,7 @@ appearanceHTML = (function(orig){
   return function(ch){ return statusHTML(ch) + orig(ch); };
 })(appearanceHTML);
 /* ---------- 追加ビューと履歴（修正45・46） ---------- */
-var XVIEW = null, SINGLE_TARGET = null, HIST = [], RESTORING = false;
+var XVIEW = null, SINGLE_TARGET = null, HIST = [], FW = [], RESTORING = false;
 var XIDS = ["viewSingle", "viewTcr", "viewRel", "viewNosrc"];
 (function(){
   var ab = document.getElementById("viewAbility");
@@ -3376,10 +3376,9 @@ function showXView(id){
   if(id){ var e = document.getElementById(id); if(e){ e.hidden = false; XVIEW = id; e.scrollTop = 0; document.body.style.overflow = "hidden"; } }
 }
 function snapState(){ return { view: view, activeId: activeId, activeChara: activeChara, editActiveId: editActiveId, editChara: editChara, EP_SEL: EP_SEL, xview: XVIEW, single: SINGLE_TARGET }; }
-function pushHist(){ HIST.push(snapState()); if(HIST.length > 60) HIST.shift(); updateBackBtn(); }
+function pushHist(){ HIST.push(snapState()); if(HIST.length > 60) HIST.shift(); FW = []; updateBackBtn(); }
 function updateBackBtn(){ var b = document.getElementById("backBtn"); if(b) b.style.display = HIST.length ? "" : "none"; }
-function goBack(){
-  var s = HIST.pop(); if(!s) return;
+function restoreState(s){
   RESTORING = true;
   activeId = s.activeId; activeChara = s.activeChara; editActiveId = s.editActiveId; editChara = s.editChara; EP_SEL = s.EP_SEL; SINGLE_TARGET = s.single;
   render();
@@ -3387,6 +3386,33 @@ function goBack(){
   RESTORING = false;
   updateBackBtn();
 }
+function goBack(){
+  var s = HIST.pop(); if(!s) return;
+  FW.push(snapState());
+  restoreState(s);
+}
+function goForward(){
+  var s = FW.pop(); if(!s) return;
+  HIST.push(snapState()); if(HIST.length > 60) HIST.shift();
+  restoreState(s);
+}
+/* 修正52：左右スワイプで戻る／進む（ボタンは追加しない） */
+var SWP = null;
+document.addEventListener("touchstart", function(e){
+  if(e.touches.length !== 1){ SWP = null; return; }
+  var t = e.target;
+  if(t && t.closest && t.closest("input, textarea, select, table")){ SWP = null; return; }
+  SWP = { x: e.touches[0].clientX, y: e.touches[0].clientY, t: Date.now() };
+}, { passive: true });
+document.addEventListener("touchend", function(e){
+  if(!SWP) return;
+  var c = e.changedTouches[0];
+  var dx = c.clientX - SWP.x, dy = c.clientY - SWP.y;
+  var dt = Date.now() - SWP.t; SWP = null;
+  if(dt > 700) return;
+  if(Math.abs(dx) < 72 || Math.abs(dx) < Math.abs(dy) * 1.6) return;
+  if(dx > 0) goBack(); else goForward();
+}, { passive: true });
 setView = (function(orig){
   return function(v){ if(!RESTORING && (XVIEW || view !== v)) pushHist(); orig(v); hideXViews(); updateBackBtn(); };
 })(setView);
@@ -3453,7 +3479,7 @@ function renderTCR(){
     if(b.ability && b.ability !== "未出"){
       var key = rubyKeyOf(b.ability);
       var ttl = key ? abilityItemTitle(key) : "";
-      abCell = ttl ? '<a class="namelink" data-jump="item:ability:' + esc(ttl) + '">' + esc(b.ability) + "</a>" : esc(b.ability);
+      abCell = ttl ? '<a class="namelink" data-jump="item:ability:' + esc(ttl) + '">' + esc(b.ability) + "</a>" : "未出";
     }
     h += "<tr><td>" + '<a class="namelink" data-jump="chara:' + esc(ch._id) + '">' + esc(ch.name) + "</a></td><td>" + tcrLink(b.type, "タイプ") + "</td><td>" + tcrLink(b.cls, "クラス") + "</td><td>" + tcrLink(b.rank, "ランク") + "</td><td>" + abCell + "</td></tr>";
   });
@@ -3526,6 +3552,53 @@ function renderNosrc(){
     + (rows.length ? rows.map(function(r){ return '<p class="overall"><a class="namelink" data-jump="' + esc(r.key) + '">' + esc(r.label) + "</a>：" + richText(r.text) + "</p>"; }).join("") : '<p class="overall">出典のない事実はありません。</p>');
 }
 /* ---------- ユーティリティバーの差し込み ---------- */
+
+/* 修正53：未出・不明まとめはキャラ／項目ごとに1行（未出の項目名を並べる） */
+renderUnknown = function(){
+  var box = document.getElementById("unknownBox");
+  if(!box) return;
+  function fieldsOf(t, fallback){
+    var out = [];
+    function add(s){ s.split("・").forEach(function(p){ p = p.trim(); if(p && p.length <= 12 && !/で$/.test(p) && out.indexOf(p) < 0) out.push(p); }); }
+    t.split("。").forEach(function(seg){
+      var m = seg.match(/^(.+?)：(未出|不明)/) || seg.match(/^(.+?)は(?:[^、]{0,8}では)?(未出|不明)$/) || seg.match(/^(.+?)は(未出|不明)$/);
+      if(m) add(m[1]);
+    });
+    if(!out.length && fallback) add(fallback);
+    return out;
+  }
+  var order = [], grouped = {};
+  function push(key, label, fields){
+    if(!grouped[key]){ grouped[key] = { key:key, label:label, labels:[] }; order.push(grouped[key]); }
+    fields.forEach(function(f){ if(grouped[key].labels.indexOf(f) < 0) grouped[key].labels.push(f); });
+  }
+  DATA.charas.forEach(function(ch){
+    if(chRank(itemChapter(ch)) > chRank(displayChapter)) return;
+    var key = "chara:" + ch._id;
+    if((ch.badge.ability || "").indexOf("未出") >= 0) push(key, ch.name, ["能力名"]);
+    ch.sections.forEach(function(sec){ visibleFacts(sec.facts).forEach(function(f){
+      if(f.t.indexOf("未出") >= 0 || f.t.indexOf("不明") >= 0) push(key, ch.name, fieldsOf(f.t, sec.h));
+    }); });
+  });
+  DATA.cats.forEach(function(cat){
+    if(cat.kind === "chara") return;
+    cat.items.forEach(function(it){
+      if(chRank(itemChapter(it)) > chRank(displayChapter)) return;
+      var key = "item:" + cat.id + ":" + (it.title || "");
+      [[it.facts, "内容"], [it.basic, "基本情報"], [it.feat, "特徴"]].forEach(function(pair){
+        var list = pair[0];
+        if(list) visibleFacts(list).forEach(function(f){
+          if(f.t.indexOf("未出") >= 0 || f.t.indexOf("不明") >= 0) push(key, it.title, fieldsOf(f.t, pair[1]));
+        });
+      });
+    });
+  });
+  if(!order.length){ box.innerHTML = ""; return; }
+  var lis = order.slice(0, 60).map(function(g){
+    return '<p class="overall"><a class="namelink" data-jump="' + esc(g.key) + '">' + esc(g.label) + "</a>：未出・不明の欄：" + esc(g.labels.join("、")) + "</p>";
+  }).join("");
+  box.innerHTML = '<details class="unknownbox"><summary>まだ決まっていない設定（未出・不明） ' + order.length + "件</summary>" + lis + "</details>";
+};
 render = (function(orig){
   return function(){
     orig();
