@@ -1787,21 +1787,22 @@ _editCharaFact("イノ", "初登場：2-23", "初登場：1-15（襲撃者のリ
 _editCharaFact("ウサ", "初登場：2-23（名前のみ）", "初登場：1-20（ウサギの能力者として）／名前初出：1a-5", [21, 38]);
 
 /* ---------- 修正43：タイプ・クラス・ランクの項目を能力設定に追加 ---------- */
-[["グラス", "葉、色は緑"], ["フレア", "炎、色は赤"], ["アクア", "水滴、色は青"], ["シャドー", "月、色は紫"],
- ["ホーリー", "星、色はピンク"], ["ウィンド", "風の渦、色は水色"], ["サンダー", "雷、色は黄"], ["グランド", "山、色は茶"]
+[["グラス", "草"], ["フレア", "炎"], ["アクア", "水"], ["シャドー", "闇"],
+ ["ホーリー", "光"], ["ウィンド", "風"], ["サンダー", "雷"], ["グランド", "土"]
 ].forEach(function(pair){
-  addItem("ability", { title: pair[0] + "（タイプ）", chapter: 1, facts: [ F("タイプの一つ。モチーフは" + pair[1], [8]) ] });
+  addItem("ability", { title: pair[0] + "（タイプ）", chapter: 1, facts: [ F("九つのタイプの一つ。" + pair[1] + "の属性", [8]) ] });
 });
-addItem("ability", { title: "ナイン（タイプ）", chapter: 1, facts: [ F("8つの属性のどれにも当てはまらない能力の総称", [8]) ] });
-[["パワー", "拳"], ["ソルジャー", "剣"], ["ウィザード", "杖"]].forEach(function(pair){
-  addItem("ability", { title: pair[0] + "（クラス）", chapter: 1, facts: [ F("クラスの一つ。モチーフは" + pair[1], [8]) ] });
+addItem("ability", { title: "ナイン（タイプ）", chapter: 1, facts: [ F("九つのタイプの一つ。他の八つの属性とは違う、特殊な属性", [8]) ] });
+[["パワー", "身体能力を上げる"], ["ウィザード", "魔法を使う"], ["ソルジャー", "武器を使う"], ["サモン", "召喚獣を呼び出す"],
+ ["エッジ", "刃物を使う"], ["ガーディアン", "防御をする"], ["ヒーラー", "回復をする"], ["スペシャル", "特殊な"]
+].forEach(function(pair){
+  addItem("ability", { title: pair[0] + "（クラス）", chapter: 1, facts: [ F("八つのクラスの一つ。" + pair[1] + "能力", [8]) ] });
 });
-addItem("ability", { title: "サモン（クラス）", chapter: 1, facts: [ F("クラスの一つ。モチーフは羅針盤紋様。召喚獣を出す", [8, 11]) ] });
-addItem("ability", { title: "妖精級（ランク）", chapter: 1, facts: [ F("5段階ランクの最下位。全世界の95%がこのランク", [9]) ] });
-addItem("ability", { title: "霊獣級（ランク）", chapter: 1, facts: [ F("下から2番目のランク。上位5%以上で、一人で世界を旅できる強さ", [11, 16]), F("ランクは1階級上がるごとに10倍強いとされる", [16]) ] });
-addItem("ability", { title: "精霊級（ランク）", chapter: 1, facts: [ F("数千人に1人のランク", [9]) ] });
-addItem("ability", { title: "精霊王級（ランク）", chapter: 1, facts: [ F("世界に数人しかいないランク", [9]) ] });
-addItem("ability", { title: "属性神王級（ランク）", chapter: 1, facts: [ F("最高位のランク。9人存在し、『八皇一鬼』と呼ばれる", [9, 10]) ] });
+addItem("ability", { title: "妖精級（ランク）", chapter: 1, facts: [ F("5段階ランクの最下位。この世界の人間の大半がこのランク", [9]) ] });
+addItem("ability", { title: "霊獣級（ランク）", chapter: 1, facts: [ F("下から2番目のランク。全世界の上位5%に入り、世界中のたいていの場所へ一人で冒険に行ける強さ", [9, 11]), F("ランクは1階級上がるごとに10倍強いとされる", [16]) ] });
+addItem("ability", { title: "精霊級（ランク）", chapter: 1, facts: [ F("下から3番目のランク。強さは妖精級の百倍とされる", [9, 16]) ] });
+addItem("ability", { title: "精霊王級（ランク）", chapter: 1, facts: [ F("下から4番目のランク。強さは妖精級の千倍とされる", [9, 16]) ] });
+addItem("ability", { title: "属性神王級（ランク）", chapter: 1, facts: [ F("最高位のランク。いつの時代も九人しかおらず、『八皇一鬼』と呼ばれる", [9]) ] });
 /* ---------- 修正44：エレナの能力のルビを全体1セグメントに ---------- */
 if(ABILITIES["それいけ友達大行進"]) ABILITIES["それいけ友達大行進"].segs = [["それいけ友達大行進", "オルディートンロトゥ"]];
 
@@ -2450,7 +2451,7 @@ return '<div class="badges">'
 function cardHTML(cat, item, showCat, edit){
 RICH_SELF = "item:" + cat.id + ":" + (item.title || "");
 var h = '<article class="card' + (item.wide ? ' wide' : '') + '">';
-h += '<h3 data-anchor="' + esc(item.title || "") + '">' + (showCat ? '<span class="cat-tag">' + cat.icon + ' ' + esc(cat.name) + '</span>' : '') + rubyOnly(item.title || "") + itemMarks(item) + '</h3>';
+h += '<h3 data-anchor="' + esc(item.title || "") + '">' + (showCat ? '<span class="cat-tag">' + cat.icon + ' ' + esc(cat.name) + '</span>' : '') + (edit ? (rubyOnly(item.title || "") + itemMarks(item)) : ('<a class="namelink" data-jump="item:' + cat.id + ':' + esc(item.title || "") + '">' + rubyOnly(item.title || "") + itemMarks(item) + '</a>')) + '</h3>';
 if(edit) h += itemTools(item);
 if(!edit) h += '<div class="cardtools">' + favBtnHTML("item:" + cat.id + ":" + (item.title || "")) + collapseBtnHTML("item:" + cat.id + ":" + (item.title || "")) + '</div><div class="cardbody"' + (!OPENED["item:" + cat.id + ":" + (item.title || "")] ? ' style="display:none"' : '') + '>';
 if(item.ruby) h += copyRow(item.ruby);
@@ -2641,7 +2642,7 @@ return h;
 function countryHTML(cat, item, showCat, edit){
 RICH_SELF = "item:" + cat.id + ":" + (item.title || "");
 var h = '<article class="card">';
-h += '<h3 data-anchor="' + esc(item.title || "") + '">' + (showCat ? '<span class="cat-tag">' + cat.icon + ' ' + esc(cat.name) + '</span>' : '') + rubyOnly(item.title || "") + itemMarks(item) + '</h3>';
+h += '<h3 data-anchor="' + esc(item.title || "") + '">' + (showCat ? '<span class="cat-tag">' + cat.icon + ' ' + esc(cat.name) + '</span>' : '') + (edit ? (rubyOnly(item.title || "") + itemMarks(item)) : ('<a class="namelink" data-jump="item:' + cat.id + ':' + esc(item.title || "") + '">' + rubyOnly(item.title || "") + itemMarks(item) + '</a>')) + '</h3>';
 if(edit) h += itemTools(item);
 if(!edit) h += '<div class="cardtools">' + favBtnHTML("item:" + cat.id + ":" + (item.title || "")) + collapseBtnHTML("item:" + cat.id + ":" + (item.title || "")) + '</div><div class="cardbody"' + (!OPENED["item:" + cat.id + ":" + (item.title || "")] ? ' style="display:none"' : '') + '>';
 h += '<h4 class="subhead">基本情報</h4>' + factLis(item.basic || [], edit);
@@ -2659,7 +2660,7 @@ return h;
 function termHTML(cat, item, showCat, edit){
 RICH_SELF = "item:" + cat.id + ":" + (item.title || "");
 var h = '<article class="card">';
-h += '<h3 data-anchor="' + esc(item.title || "") + '">' + (showCat ? '<span class="cat-tag">' + cat.icon + ' ' + esc(cat.name) + '</span>' : '') + rubyOnly(item.title || "") + itemMarks(item) + '</h3>';
+h += '<h3 data-anchor="' + esc(item.title || "") + '">' + (showCat ? '<span class="cat-tag">' + cat.icon + ' ' + esc(cat.name) + '</span>' : '') + (edit ? (rubyOnly(item.title || "") + itemMarks(item)) : ('<a class="namelink" data-jump="item:' + cat.id + ':' + esc(item.title || "") + '">' + rubyOnly(item.title || "") + itemMarks(item) + '</a>')) + '</h3>';
 if(edit) h += itemTools(item);
 if(!edit) h += '<div class="cardtools">' + favBtnHTML("item:" + cat.id + ":" + (item.title || "")) + collapseBtnHTML("item:" + cat.id + ":" + (item.title || "")) + '</div><div class="cardbody"' + (!OPENED["item:" + cat.id + ":" + (item.title || "")] ? ' style="display:none"' : '') + '>';
 h += '<h4 class="subhead">意味</h4>' + factLis(item.facts || [], edit);
@@ -2677,7 +2678,7 @@ function charaPageHTML(ch, showCat, edit, q){
 RICH_SELF = "chara:" + ch._id;
 var h = '<article class="card wide charapage">';
 if(!edit && !q) h += '<div class="cardtools">' + favBtnHTML("chara:" + ch._id) + collapseBtnHTML("chara:" + ch._id) + '</div>';
-h += '<h3>' + (showCat ? '<span class="cat-tag">💁 キャラ</span>' : '') + rubyOnly(ch.name) + itemMarks(ch) + '</h3>';
+h += '<h3>' + (showCat ? '<span class="cat-tag">💁 キャラ</span>' : '') + (edit ? (rubyOnly(ch.name) + itemMarks(ch)) : ('<a class="namelink" data-jump="chara:' + esc(ch._id) + '">' + rubyOnly(ch.name) + itemMarks(ch) + '</a>')) + '</h3>';
 if(edit) h += '<div class="itemtools"><button type="button" class="ebtn" data-act="edit-chara" data-iid="' + esc(ch._id) + '">キャラを編集</button>'
 + '<button type="button" class="ebtn danger" data-act="del-item" data-iid="' + esc(ch._id) + '">キャラを削除</button></div>';
 if(!edit && !q) h += '<div class="cardbody"' + (!OPENED["chara:" + ch._id] ? ' style="display:none"' : '') + '>';
@@ -3142,8 +3143,7 @@ var t = e.target;
 var charaBtn = t.closest ? t.closest("[data-chara]") : null;
 if(charaBtn){
 var id = charaBtn.getAttribute("data-chara");
-if(view === "edit"){ editChara = id; } else { activeChara = id; recordRecent("chara:" + id); }
-render(); window.scrollTo({ top:0, behavior:"smooth" });
+if(view === "edit"){ editChara = id; render(); window.scrollTo({ top:0, behavior:"smooth" }); } else { jumpTo("chara:" + id); }
 return;
 }
 var rsBtn = t.closest ? t.closest("[data-resolve]") : null;
@@ -3362,12 +3362,10 @@ var XIDS = ["viewSingle", "viewTcr", "viewRel", "viewNosrc"];
     + ".xscreen[hidden]{display:none}"
     + "#viewSingle .collapsebtn{display:none}"
     + "body{-webkit-tap-highlight-color:transparent}"
-    + "button,a{touch-action:manipulation}";
+    + "button,a{touch-action:manipulation}"
+    + "body,.xscreen{touch-action:pan-y}"
+    + ".relmid{position:absolute;transform:translate(-50%,-50%);background:#fff;border:1.5px solid var(--line);color:var(--ink2);border-radius:999px;padding:1px 7px;font-size:10px;font-weight:700;white-space:nowrap;z-index:1}";
   document.body.appendChild(xst);
-  var btn = document.createElement("button");
-  btn.type = "button"; btn.id = "backBtn"; btn.className = "backbtn-fixed"; btn.textContent = "← 戻る"; btn.style.display = "none";
-  btn.addEventListener("click", function(){ goBack(); });
-  document.body.appendChild(btn);
 })();
 function hideXViews(){ XIDS.forEach(function(id){ var e = document.getElementById(id); if(e) e.hidden = true; }); XVIEW = null; document.body.style.overflow = ""; }
 function showXView(id){
@@ -3403,6 +3401,14 @@ document.addEventListener("touchstart", function(e){
   var t = e.target;
   if(t && t.closest && t.closest("input, textarea, select, table")){ SWP = null; return; }
   SWP = { x: e.touches[0].clientX, y: e.touches[0].clientY, t: Date.now() };
+}, { passive: true });
+document.addEventListener("touchmove", function(e){
+  if(!SWP) return;
+  var t = e.touches[0];
+  var dx = t.clientX - SWP.x, dy = t.clientY - SWP.y;
+  if(Math.abs(dx) < 64 || Math.abs(dx) < Math.abs(dy) * 1.5) return;
+  SWP = null;
+  if(dx > 0) goBack(); else goForward();
 }, { passive: true });
 document.addEventListener("touchend", function(e){
   if(!SWP) return;
@@ -3598,6 +3604,48 @@ renderUnknown = function(){
     return '<p class="overall"><a class="namelink" data-jump="' + esc(g.key) + '">' + esc(g.label) + "</a>：未出・不明の欄：" + esc(g.labels.join("、")) + "</p>";
   }).join("");
   box.innerHTML = '<details class="unknownbox"><summary>まだ決まっていない設定（未出・不明） ' + order.length + "件</summary>" + lis + "</details>";
+};
+
+/* 修正59：相関図に線ラベルを付け、ノードが画面からはみ出さないようにする */
+renderRel = function(){
+  var el = document.getElementById("viewRel");
+  var idOf = {};
+  DATA.charas.forEach(function(c){ idOf[c.name] = c._id; });
+  var POSFIX = { "イザドラ・オーティス": [79, 62], "エレナ・コリアス": [76, 42], "謎の子ども": [14, 44], "イノ": [80, 86], "リーダー（襲撃者）": [62, 70] };
+  function pos(n){ var p = POSFIX[n] || REL_NODES[n]; if(!p) return null; return [Math.min(87, Math.max(13, p[0])), Math.min(95, Math.max(5, p[1]))]; }
+  function shortLabel(s){
+    if(s.indexOf("主人とメイド") >= 0) return "主従";
+    if(s.indexOf("親子") >= 0) return "親子";
+    if(s.indexOf("夫婦") >= 0) return "夫婦";
+    if(s.indexOf("キャンディー") >= 0) return "授与";
+    if(s.indexOf("コピー") >= 0) return "能力コピー";
+    if(s.indexOf("約束") >= 0) return "約束";
+    if(s.indexOf("襲撃") >= 0) return "襲撃";
+    if(s.indexOf("助けられた") >= 0) return "救助";
+    if(s.indexOf("遠い親戚") >= 0) return "遠縁";
+    if(s.indexOf("同一人物") >= 0) return "同一人物";
+    if(s.indexOf("国王") >= 0) return "国王と名家";
+    return "";
+  }
+  var lines = REL_EDGES.map(function(e){
+    var a = pos(e[0]), b = pos(e[1]);
+    if(!a || !b) return "";
+    return '<line x1="' + a[0] + '" y1="' + a[1] + '" x2="' + b[0] + '" y2="' + b[1] + '" stroke="#cbb" stroke-width="0.5"/>';
+  }).join("");
+  var mids = REL_EDGES.map(function(e){
+    var a = pos(e[0]), b = pos(e[1]);
+    if(!a || !b) return "";
+    var lb = shortLabel(e[2]);
+    if(!lb) return "";
+    return '<span class="relmid" style="left:' + ((a[0] + b[0]) / 2) + "%;top:" + ((a[1] + b[1]) / 2) + '%">' + esc(lb) + "</span>";
+  }).join("");
+  var nodes = Object.keys(REL_NODES).map(function(n){
+    if(!idOf[n]) return "";
+    var p = pos(n);
+    return '<button type="button" class="relnode" style="left:' + p[0] + "%;top:" + p[1] + '%" data-jump="chara:' + esc(idOf[n]) + '">' + esc(n.replace("アルジェント・", "")) + "</button>";
+  }).join("");
+  var list = REL_EDGES.map(function(e){ return '<p class="overall">' + esc(e[0].replace("アルジェント・", "")) + " × " + esc(e[1].replace("アルジェント・", "")) + "：" + esc(e[2]) + "</p>"; }).join("");
+  el.innerHTML = '<h3 class="cardtitle">キャラ相関図</h3><div class="relwrap"><svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none" style="position:absolute;inset:0">' + lines + "</svg>" + mids + nodes + "</div>" + list;
 };
 render = (function(orig){
   return function(){
