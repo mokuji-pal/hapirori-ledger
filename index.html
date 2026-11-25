@@ -3354,20 +3354,26 @@ var XIDS = ["viewSingle", "viewTcr", "viewRel", "viewNosrc"];
   var ab = document.getElementById("viewAbility");
   ["viewSingle", "viewTcr", "viewRel", "viewNosrc"].forEach(function(id){
     var s = document.createElement("section");
-    s.id = id; s.hidden = true;
+    s.id = id; s.hidden = true; s.className = "xscreen";
     document.body.appendChild(s);
   });
+  var xst = document.createElement("style");
+  xst.textContent = ".xscreen{position:fixed;top:0;left:0;right:0;bottom:calc(var(--tabbar-h,64px) + env(safe-area-inset-bottom));z-index:55;background:var(--bg);overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:12px 16px 48px}"
+    + ".xscreen[hidden]{display:none}"
+    + "#viewSingle .collapsebtn{display:none}"
+    + "body{-webkit-tap-highlight-color:transparent}"
+    + "button,a{touch-action:manipulation}";
+  document.body.appendChild(xst);
   var btn = document.createElement("button");
   btn.type = "button"; btn.id = "backBtn"; btn.className = "backbtn-fixed"; btn.textContent = "← 戻る"; btn.style.display = "none";
   btn.addEventListener("click", function(){ goBack(); });
   document.body.appendChild(btn);
 })();
-function hideXViews(){ XIDS.forEach(function(id){ var e = document.getElementById(id); if(e) e.hidden = true; }); XVIEW = null; }
+function hideXViews(){ XIDS.forEach(function(id){ var e = document.getElementById(id); if(e) e.hidden = true; }); XVIEW = null; document.body.style.overflow = ""; }
 function showXView(id){
   for(var k in viewEls){ viewEls[k].hidden = true; tabBtns[k].setAttribute("aria-selected", "false"); }
   hideXViews();
-  if(id){ var e = document.getElementById(id); if(e){ e.hidden = false; XVIEW = id; } }
-  window.scrollTo({ top: 0 });
+  if(id){ var e = document.getElementById(id); if(e){ e.hidden = false; XVIEW = id; e.scrollTop = 0; document.body.style.overflow = "hidden"; } }
 }
 function snapState(){ return { view: view, activeId: activeId, activeChara: activeChara, editActiveId: editActiveId, editChara: editChara, EP_SEL: EP_SEL, xview: XVIEW, single: SINGLE_TARGET }; }
 function pushHist(){ HIST.push(snapState()); if(HIST.length > 60) HIST.shift(); updateBackBtn(); }
