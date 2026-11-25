@@ -219,6 +219,16 @@ footer{margin-top:36px;padding-top:16px;border-top:1px solid var(--line-soft);co
 footer a{color:var(--accent-deep)}
 [hidden]{display:none !important}
 @media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}.toast{transition:none}}
+
+.cardbody p, p.overall{white-space:pre-line}
+.backbtn-fixed{position:fixed;left:12px;bottom:calc(var(--tabbar-h, 60px) + 14px);z-index:60;border:2px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:10px 20px;min-height:48px;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;box-shadow:0 4px 14px rgba(0,0,0,.18)}
+.tcrtable{width:100%;border-collapse:collapse;font-size:13px;background:var(--card)}
+.tcrtable th,.tcrtable td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+.tcrtable th{background:var(--card2)}
+.statusbox{border:2px solid var(--accent);border-radius:12px;padding:4px 12px 10px;margin:12px 0;background:var(--card2)}
+.relwrap{position:relative;width:100%;height:620px}
+.relnode{position:absolute;transform:translate(-50%,-50%);border:2px solid var(--accent);background:var(--card);color:var(--ink);border-radius:999px;padding:6px 10px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap;z-index:2}
+.utilbar{margin-bottom:10px}
 </style>
 </head>
 <body>
@@ -1009,28 +1019,28 @@ var EPISODES = [
 [6,"エイリーは1週間だけ残ることに。宮廷救護班の救護長ジーナが自己紹介し、キスを試みる。"],
 [7,"朝食の席で、エイリーが1週間残りパーチェの能力を調べることが決まる。"],
 [8,"エイリーがタイプとクラスを説明する。自分がナインのサモンだと明かす。"],
-[9,"王族で朝食。主人公はキスでコピーする能力を両親に話し、受け入れられる。"],
+[9,"エイリーがランクについて説明する。属性神王級の恐ろしさが語られる。"],
 [10,"エイリーがランクを説明。世界の能力者の分布と八皇一鬼の存在が語られる。"],
-[11,"広場で能力の訓練。エイリーの召喚獣を初めて見る。ウサギを助ける。"],
+[11,"エイリーが基礎魔法と自分の能力を説明し、歯車を使った実践訓練を行う。キャンディーは時間で回復すると分かる。"],
 [12,"部屋でエイリーがカリーノを連れてくる。カリーノとキスして能力をコピーし、透明化を試す（キスの場面は本文では伏せられている）。能力について話す場面。"],
 [13,"キャンディーの再生の仕組みが分かる。エイリーの過去が語られる。"],
 [14,"魂年齢と世界の広さが語られる。沼地の魔女ドルヴィが登場。"],
 [15,"城に12人の襲撃者が現れる。能力の総整理と戦いの始まり。"],
-[16,"リベロ王と襲撃者の戦い。ランクの倍率が説明される。"],
-[17,"王妃プリートが戦い、倒れる。主人公は戦う決意をする。"],
-[18,"主人公が戦いに加わり、仲間と合流する。"],
+[16,"襲撃者12人全員が霊獣級と分かる。ランクは1階級上がるごとに10倍強いと説明され、戦いが始まる。"],
+[17,"土の獣との戦い。主人公は人を殴ることに戸惑い、脇腹に一撃を受け、サルにしがみつかれる。"],
+[18,"サルを落下の衝撃で振りほどく。土を破壊すれば術者は魔力欠乏症になると見抜くが、エイリーがヘビに首を絞められる。"],
 [19,"エイリーが水のピンチに陥る。主人公は相性を考えて戦う。"],
-[20,"戦いの合間に謎の物音。黒翼の医師団への疑いが語られる。"],
-[21,"戦況が整理され、敵の能力が見えてくる。"],
-[22,"主人公が魔力量を量られる。襲撃者の力は外的要因ではないかと推測する。"],
-[23,"戦いの焦点が土の竜とヘビに移る。"],
+[20,"イヌ・サル・トリの3人が連携して襲来。ジーナの回復で脇腹を治し、3体を撃破する（計7人撃破、残り5人）。"],
+[21,"残り5人。ウサギと龍の能力者が出て、龍使いが主人公を連れ去り、「城を譲ってください」と交渉を持ちかける。"],
+[22,"襲撃者の男が、主人公とエイリーの魔力量を感覚で「二十ぐらい」と見積もる。襲撃者の力は外的要因ではないかと推測する。"],
+[23,"土のウシの老人とヒツジの能力者との戦い。大地を沼化させてウシを倒し、残るはリーダー一人となる。"],
 [24,"キスで魔力を移せることが示される。戦いは続く。"],
 [25,"リーダーの能力『大地からの暴君』が明かされ、土シャチに飲み込まれる。"],
 [26,"土シャチの体内から魔力の爆発で脱出。再戦が始まる。"],
-[27,"トラの能力者との戦いが再開。エイリーの体当たりの経緯が明かされる。"],
-[28,"トラの能力者と戦い、リーダーが降伏して戦いが終わる。"],
-[29,"襲撃者11人を捕らえる。エイリーが旅の従者として残ることを受け入れる。"],
-[30,"準備期間。リベロ王から国王の条件とエイリーの過去を聞く。"],
+[27,"トラの能力者との戦いが再開。エイリーが霊獣から飛び降りて、トラとウマを正面衝突させた経緯が明かされる。"],
+[28,"トラの能力者との戦いが終わる。リーダーは人質を取り約束を破るが、最後は倒される。"],
+[29,"主人公の前世が語られる。エイリーに旅への同行を提案する。"],
+[30,"襲撃戦の振り返りと、旅立ちに向けた話し合い。"],
 [31,"夜の池で、エイリーが主人公を助けるために水への恐怖を乗り越えかける。"],
 [32,"準備の3日間。主人公は城の仕事を手伝い、魔力の制御を練習する。"],
 [33,"旅立ちの日。エイリーとともにセーレットへ向かい、第一章が終わる。"]
@@ -1290,15 +1300,6 @@ F2("ランク：精霊級",[65])
 F2("初出：2-25（名前のみ）",[65])
 ]
 }),
-CH2("クリム", {type:"未出",cls:"未出",rank:"霊獣級",ability:"未出"}, {
-"基本情報":[
-F2("名前：クリム",[56]),
-F2("シャチの霊獣級とされる",[56])
-],
-"初出一覧":[
-F2("初出：2-16（名前のみ）",[56])
-]
-})
 );
 
 /* ---------- 国 ---------- */
@@ -1490,11 +1491,11 @@ EPISODES.push(
 [52,"大男を起こして戦い直し、倒す",2],
 [53,"大男を牢屋に入れ、図書館で霊獣の攻略法を調べる",2],
 [54,"ビーバッグ戦の作戦を立て、エレナと小指の約束をする",2],
-[55,"山頂でトラップを使いビーバッグを細切れにするが、グルが大きくなり始める",2],
-[56,"巨大化したグルに乗って町へ戻ると、異変が起きていた",2],
+[55,"山頂でビーバッグと戦う。ビーバッグは魔力の残滓を食べて大きくなっていく。",2],
+[56,"ビーバッグを細切れにするが、トラップの魔力を食べて巨大化する。町へ戻ると異変が起きていた。",2],
 [57,"ビーバッグが町に現れて暴れ、食い止めに向かう",2],
 [58,"魔力を注ぎ続けて破裂させる作戦。エレナが自らビーバッグの口の中へ入る",2],
-[59,"ビーバッグが大爆発。エレナは片腕を失い、コアを破壊する",2],
+[59,"ビーバッグが大爆発。エレナは片腕を失う。残ったコアはパーチェとエイリーが破壊する。",2],
 [60,"国民や観光客が魔力を分け与え、エレナが目を覚ます",2],
 [61,"ビーバッグ消滅とエレナ生還の顛末を聞く。義手贈呈の報道を見る",2],
 [62,"三日後、エレナを見舞う。出発と報告の必要を確認する",2],
@@ -1509,13 +1510,13 @@ function F1a(t, s){ return F(t, s, "1a"); }
 function F2a(t, s){ return F(t, s, "2a"); }
 ABILITIES["それいけ友達大行進"] = { reading:"オルディートンロトゥ", segs:[["それいけ",""],["友達大行進","オルディートンロトゥ"]], user:"エレナ・コリアス", type:"グラス", cls:"ウィザード", chapter:2, copied:true};
 EPISODES.push(
-[67,"エイリーとパーチェが番組『ゴーマグ』を観る。先週判明した試食男爵の過去と、旧四天王のつながりを推理する。","2a"],
+[67,"前回までの『ゴーマグ』の振り返りと、試食男爵の過去と旧四天王のつながりの推理。オープニングが始まる。","2a"],
 [68,"ゴーマグ本編。試食男爵が万引きをしていたことが分かり、マオが泣き崩れる。","2a"],
 [69,"試食男爵の件でへこむエイリー。その日は宿で休み、明日からアスクワーディを目指す。","2a"],
 [70,"セーレットとアスクワーディの間の不干渉地帯を進む。エイリーの水嫌いの原因が明かされ、水でできた霊獣が現れる。","2a"],
 [71,"野生のアクアガゼル親子と戦う。親がキャンディの入ったポーチをくわえて逃げる。","2a"],
 [72,"蓮を足場に岩山を駆け上がる。エイリーが水を浴びて崖から落ちかけ、姫が救う。","2a"],
-[73,"グルに乗ったエイリーが、落下の勢いで親ガゼルの首を折る。","2a"],
+[73,"グルの背中から飛び降りたエイリーが、落下の勢いで親ガゼルの首を歯車で折る。","2a"],
 [74,"姫がエイリーを救い出す。アクアガゼル親子のために形だけのお墓を立て、洞窟で一晩過ごす。幕間2完。","2a"]
 );
 addItem("country", { title:"皇国ウルー", chapter:"1a",
@@ -1712,6 +1713,97 @@ F1a("パーチェに腕を吹っ飛ばされ、片腕を失った",[38]),
 F1a("決闘の後、城で働くことになり、エイリーが一人で処理していた事務仕事を引き継いだ",[38])
 ]
 }); c.chapter = "1a"; c.sections.forEach(function(sec){ sec.facts.forEach(function(f){ if(f.t === "第一章では未出"){ f.t = "幕間1では未出"; f.chapter = "1a"; }});}); CHARAS.push(c); })();
+
+/* ================= 洗い出し修正（2026-11-25・全話本文照合に基づく） ================= */
+function _eachFact(cb){
+  CHARAS.forEach(function(ch){ ch.sections.forEach(function(sec){ cb(sec.facts, ch.name); }); });
+  CATS.forEach(function(cat){ cat.items.forEach(function(it){
+    ["basic", "facts", "feat"].forEach(function(k){ if(it[k]) cb(it[k], it.title); });
+  }); });
+}
+function _delFacts(substr){
+  _eachFact(function(facts){ for(var i = facts.length - 1; i >= 0; i--){ if(facts[i].t.indexOf(substr) >= 0) facts.splice(i, 1); } });
+}
+function _editFact(substr, newText, newSrc){
+  _eachFact(function(facts){ facts.forEach(function(f){ if(f.t.indexOf(substr) >= 0){ f.t = newText; if(newSrc) f.s = newSrc; } }); });
+}
+function _srcFact(substr, newSrc){
+  _eachFact(function(facts){ facts.forEach(function(f){ if(f.t.indexOf(substr) >= 0) f.s = newSrc; }); });
+}
+function _editCharaFact(charaName, substr, newText, newSrc){
+  CHARAS.forEach(function(ch){ if(ch.name !== charaName) return;
+    ch.sections.forEach(function(sec){ sec.facts.forEach(function(f){
+      if(f.t.indexOf(substr) >= 0){ f.t = newText; if(newSrc) f.s = newSrc; }
+    }); });
+  });
+}
+/* ---- 捏造・根拠なしの削除 ---- */
+_delFacts("年齢：30歳くらい");
+_delFacts("努力で強くなった稀な例");
+_delFacts("国王になるためには、国で一番強い能力者でなければならない");
+_delFacts("「姫に勝った」という発言の意味が不明");
+_delFacts("トラの能力者の「姫に勝った」という発言の意味");
+_delFacts("霊獣の身体は魔力でできており、魔力は霊獣にとってエネルギーである");
+_delFacts("トラップ（結界）の魔力を食べて巨大化したことがある");
+addIF("term", "ビーバッグ", "facts", [ F2("トラップ（結界）の魔力を食べて巨大化した",[56]) ]);
+/* ---- 事実文の修正 ---- */
+_editFact("友達も恋人もいなかった", "前世では物心ついた頃からいじめられ、親から期待されず愛されなかった");
+_editFact("襲撃の目的と背後関係。戦いの末に主人公へ降伏した", "襲撃の目的と背後関係。人質を取り約束を破るなどしたが、最後は倒された");
+_editFact("リーダーは降伏したが全容は未解明", "襲撃者12人が霊獣級の力を得た外的要因と、襲撃の背後関係。リーダーは倒されたが全容は未解明");
+_editFact("牛の能力者は老人で、泥を爆発させる能力を使ったことがある", "牛の能力者は老人。泥を爆発させるような使い方を見せたが、魔力の爆発自体は能力者なら誰でもできる共通の技と推測されている");
+_editFact("観光客が撮った映像が売られることがある", "ポセイドンネットワークに動画を売り付ける、という台詞がある");
+_editFact("パーチェはセーレットの城を出る少し前あたりから観るようになった", "パーチェはゴーマグを観て興奮するようになった");
+_editFact("決めぜりふは「たとえ貧乏だろうとも、この心だけは絶対セレブ！」", "決めぜりふは「たとえ金持ちだろうとも、たとえ貧乏だろうとも、この心だけは絶対セレブ！」");
+_editFact("オオオニバスを足場にしたりもできる", "蓮を足場にしたりもできる");
+/* ---- 出典の付け替え ---- */
+_srcFact("川で流されていたところをリベロ王に助けられ、城に来た", [14, 33]);
+_srcFact("川で流されていたエイリーを助けた", [14, 33]);
+_srcFact("弱点：水が弱点で、水に濡れると力が使えなくなる。水恐怖症", [6, 19, 33]);
+_srcFact("パーチェを「バカ息子」と呼ぶ", [33]);
+_srcFact("パーチェに肩車をせがむ", [32, 33]);
+_srcFact("湿度が低く、小麦の栽培に適している。黄金の麦畑が広がる", [11, 33]);
+_srcFact("姫は核兵器のような抑止力で、戦争の道具とされる", [31]);
+_srcFact("能力の強さは、女の子、男の子、おばさん、おじさんの順で", [11, 31]);
+_srcFact("戦いの末、11人が捕らえられた", [31]);
+_srcFact("転生後は、メイドを傷付けない、手伝う、優しいと", [33]);
+_srcFact("襲撃戦を経て、エイリーに「メイドを傷付けない、手伝う、優しい」と変化を認められ", [33]);
+_srcFact("主人公の変化を認め、旅の従者として残ることを受け入れる", [33]);
+_srcFact("最終的に旅の従者としてパーチェに同行する", [33]);
+_srcFact("能力概要：歯車でできた鋼鉄の獣を召喚する", [11, 33]);
+_srcFact("エイリーが召喚する金色のライオン。鋼鉄製で歯車でできており", [33]);
+(function(){
+  var it = findItem("term", "霊獣（金色のライオン）");
+  if(it){ it.debut = "1-32"; it.debutSrc = [33]; }
+  var tl = findItem("timeline", "年表");
+  if(tl && tl.timeline) tl.timeline.forEach(function(e){ if(e.what.indexOf("川で流されていた") >= 0) e.s = [14]; });
+})();
+/* ---- 初出の訂正 ---- */
+_editCharaFact("カリーノ", "名前初出：1-7", "名前初出：1-11", [12]);
+_editCharaFact("リーダー（襲撃者）", "初登場：1-14", "初登場：1-15", [16]);
+_editCharaFact("トラの能力者", "初登場：1-14", "初登場：1-17", [18]);
+_editCharaFact("大男（セーレットの暴漢）", "初登場：2-8", "初登場：2-9", [49]);
+_editCharaFact("エレナ・コリアス", "名前初出：2-2", "言及初出：2-1", [41]);
+_editCharaFact("イノ", "初登場：2-23", "初登場：1-15（襲撃者のリーダーとして）／名前初出：1a-4", [16, 37]);
+_editCharaFact("ウサ", "初登場：2-23（名前のみ）", "初登場：1-20（ウサギの能力者として）／名前初出：1a-5", [21, 38]);
+
+/* ---------- 修正43：タイプ・クラス・ランクの項目を能力設定に追加 ---------- */
+[["グラス", "葉、色は緑"], ["フレア", "炎、色は赤"], ["アクア", "水滴、色は青"], ["シャドー", "月、色は紫"],
+ ["ホーリー", "星、色はピンク"], ["ウィンド", "風の渦、色は水色"], ["サンダー", "雷、色は黄"], ["グランド", "山、色は茶"]
+].forEach(function(pair){
+  addItem("ability", { title: pair[0] + "（タイプ）", chapter: 1, facts: [ F("タイプの一つ。モチーフは" + pair[1], [8]) ] });
+});
+addItem("ability", { title: "ナイン（タイプ）", chapter: 1, facts: [ F("8つの属性のどれにも当てはまらない能力の総称", [8]) ] });
+[["パワー", "拳"], ["ソルジャー", "剣"], ["ウィザード", "杖"]].forEach(function(pair){
+  addItem("ability", { title: pair[0] + "（クラス）", chapter: 1, facts: [ F("クラスの一つ。モチーフは" + pair[1], [8]) ] });
+});
+addItem("ability", { title: "サモン（クラス）", chapter: 1, facts: [ F("クラスの一つ。モチーフは羅針盤紋様。召喚獣を出す", [8, 11]) ] });
+addItem("ability", { title: "妖精級（ランク）", chapter: 1, facts: [ F("5段階ランクの最下位。全世界の95%がこのランク", [9]) ] });
+addItem("ability", { title: "霊獣級（ランク）", chapter: 1, facts: [ F("下から2番目のランク。上位5%以上で、一人で世界を旅できる強さ", [11, 16]), F("ランクは1階級上がるごとに10倍強いとされる", [16]) ] });
+addItem("ability", { title: "精霊級（ランク）", chapter: 1, facts: [ F("数千人に1人のランク", [9]) ] });
+addItem("ability", { title: "精霊王級（ランク）", chapter: 1, facts: [ F("世界に数人しかいないランク", [9]) ] });
+addItem("ability", { title: "属性神王級（ランク）", chapter: 1, facts: [ F("最高位のランク。9人存在し、『八皇一鬼』と呼ばれる", [9, 10]) ] });
+/* ---------- 修正44：エレナの能力のルビを全体1セグメントに ---------- */
+if(ABILITIES["それいけ友達大行進"]) ABILITIES["それいけ友達大行進"].segs = [["それいけ友達大行進", "オルディートンロトゥ"]];
 
 /* ---------- ID付け（シード） ---------- */
 /* ---------- 能力設定（追加分） ---------- */
@@ -1988,7 +2080,7 @@ if((r.s || []).indexOf(n) >= 0) rows.push({ key: key, label: it.title, text: r.t
 var syn = null;
 EPISODES.forEach(function(ep){ if(ep[0] === n) syn = ep[1]; });
 var h = '<article class="card"><h3>' + epLabel(n) + ' <a class="srcbtn" href="' + SRC(n) + '" target="_blank" rel="noopener">なろうで読む</a></h3>';
-if(syn) h += '<p class="overall">' + richText(syn) + '</p>';
+if(syn) h += '<p class="overall">' + richText(synFormat(syn)) + '</p>';
 if(rows.length){
 h += '<h4 class="subhead">この話が出典の事実（' + rows.length + '件）</h4>' + rows.slice(0, 60).map(function(r){
 return '<p class="overall"><a class="namelink" data-jump="' + esc(r.key) + '">' + esc(r.label) + '</a>：' + richText(r.text) + '</p>';
@@ -2452,12 +2544,18 @@ RESOLVED[fid] = { ep: (n && n > 0) ? n : null };
 saveResolved(); closeSheet(); render(); showToast("回収済みにしました");
 });
 }
+var APPEARANCES = {"アルジェント・パーチェ": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74], "エイリー": [2, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74], "アルジェント・リベロ": [2, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 21, 22, 25, 26, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 41, 42, 43, 45, 46, 47, 51, 53, 54, 56, 57, 62, 63, 64, 65, 66, 68, 69, 70, 72], "アルジェント・プリート": [5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 21, 22, 29, 30, 32, 33, 34, 35, 36, 37, 38, 41, 42, 43, 47, 53, 54, 63, 64, 65, 68, 70], "ジーナ": [6, 7, 8, 9, 12, 13, 14, 15, 19, 20, 24, 29, 30, 32, 33, 50, 57], "カリーノ": [12, 13, 14, 15, 26, 28, 32, 33, 34, 35, 36, 37, 45, 50, 53, 57, 63, 64, 72], "ドルヴィ・エルズバーグ": [14, 15, 19, 24, 26, 29, 30, 39, 41, 49, 50], "謎の子ども": [3, 4, 5, 6, 7, 11, 13, 14, 41, 51], "エレナ・コリアス": [41, 42, 43, 44, 45, 46, 47, 48, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 64, 65, 66, 71], "イザドラ・オーティス": [42, 43, 44, 46, 47, 48, 53, 54, 55, 61, 62, 65, 66], "エディ・ラドフォード": [61], "アルジェント・ヴィルフレド": [66], "パオロ": [63, 64, 65], "イゼル": [65], "タツ": [21, 23, 26, 30, 38, 39], "リーダー（襲撃者）": [16, 17, 18, 19, 20, 21, 23, 24, 25, 26, 27, 28, 34, 35, 36, 37, 38, 39, 63, 64], "イノ": [16, 17, 18, 19, 20, 21, 23, 24, 25, 26, 27, 28, 34, 35, 36, 37, 38, 39, 63, 64], "トラの能力者": [18, 20, 26, 27, 28, 30], "ウサ": [21, 22, 31, 33, 38, 62, 63], "襲撃者の男（電気の拳）": [2, 3, 4, 6, 7, 11, 12, 13, 17, 32, 41, 46], "襲撃者たち（12人）": [16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 31], "大男（セーレットの暴漢）": [49, 50, 51, 52, 53, 60], "店主の孫娘（名前未出）": [49, 50, 60]};
 function appearanceHTML(ch){
 var eps = {};
+if(APPEARANCES[ch.name]){
+APPEARANCES[ch.name].forEach(function(n){ if(chRank(epChapterOf(n)) <= chRank(displayChapter)) eps[n] = 1; });
+} else {
 ch.sections.forEach(function(sec){ sec.facts.forEach(function(f){
 if(chRank(factChapter(f)) > chRank(displayChapter)) return;
 (f.s || []).forEach(function(n){ eps[n] = 1; });
 }); });
+}
+if(APPEARANCES[ch.name]){ var list0 = Object.keys(eps).map(Number).sort(function(a, b){ return a - b; }); if(!list0.length) return ""; var last0 = list0[list0.length - 1]; var chips0 = list0.map(function(n){ return '<button type="button" class="epchip" data-ep="' + n + '">' + epShort(n) + '</button>'; }).join("、"); return '<h4 class="subhead">登場話（本文で確認）</h4><p class="overall">最終登場：<button type="button" class="epchip" data-ep="' + last0 + '">' + epShort(last0) + '</button>（計' + list0.length + '話）</p><p>' + chips0 + '</p>'; }
 var names = [ch.name];
 ["パーチェ", "リベロ", "プリート", "ドルヴィ", "エレナ", "イザドラ", "イノ", "ウサギ", "ジーナ", "エイリー", "カリーノ"].forEach(function(sn){
 if(ch.name.indexOf(sn) >= 0 && names.indexOf(sn) < 0) names.push(sn);
@@ -2470,7 +2568,7 @@ var list = Object.keys(eps).map(Number).sort(function(a, b){ return a - b; });
 if(!list.length) return "";
 var last = list[list.length - 1];
 var chips = list.map(function(n){ return '<button type="button" class="epchip" data-ep="' + n + '">' + epShort(n) + '</button>'; }).join("、");
-return '<h4 class="subhead">登場話（出典とあらすじから自動集計）</h4><p class="overall">最終登場：<button type="button" class="epchip" data-ep="' + last + '">' + epShort(last) + '</button>（計' + list.length + '話）</p><p>' + chips + '</p>';
+return '<h4 class="subhead">登場話（本文で確認）</h4><p class="overall">最終登場：<button type="button" class="epchip" data-ep="' + last + '">' + epShort(last) + '</button>（計' + list.length + '話）</p><p>' + chips + '</p>';
 }
 function charaJump(name, label){
 var ch = null;
@@ -3216,6 +3314,226 @@ showToast(fallbackCopy(text) ? "コピーしました" : "コピーできませ�
 });
 
 /* ---------- 初期化 ---------- */
+/* ================= 機能追加（2026-11-25：修正41・43・45・46・47、相関図、現況カード、出典なしリスト） ================= */
+function synFormat(t){
+  if(!t) return t;
+  var parts = t.split("。").map(function(s){ return s.trim(); }).filter(function(s){ return s.length > 0; });
+  if(parts.length <= 1) return t;
+  return parts.map(function(s){ return "　" + s + "。"; }).join("\n");
+}
+/* 修正41：あらすじは「。」ごとに改行し、各行の頭を一マス空ける */
+factDisplayText = (function(orig){
+  return function(f){
+    var t = orig(f);
+    if(f && f._id && f._id.indexOf("synopsis:") === 0) t = synFormat(t);
+    return t;
+  };
+})(factDisplayText);
+/* 現況カード */
+function statusHTML(ch){
+  var apps = APPEARANCES[ch.name] || [];
+  var scoped = apps.filter(function(n){ return chRank(epChapterOf(n)) <= chRank(displayChapter); });
+  var lastEp = scoped.length ? scoped[scoped.length - 1] : null;
+  var syn = null;
+  if(lastEp) EPISODES.forEach(function(ep){ if(ep[0] === lastEp) syn = ep[1]; });
+  var change = null;
+  ch.sections.forEach(function(sec){ if(sec.h === "作中変化"){ visibleFacts(sec.facts).forEach(function(f){ change = f; }); } });
+  if(!lastEp && !change) return "";
+  var h = '<div class="statusbox"><h4 class="subhead">📌 現況（最終登場時点）</h4>';
+  if(lastEp) h += '<p class="overall">最終登場：<button type="button" class="epchip" data-ep="' + lastEp + '">' + epShort(lastEp) + '</button>' + (syn ? ' ― ' + esc(syn) : '') + '</p>';
+  if(change) h += '<p class="overall">直近の変化：' + richText(factDisplayText(change)) + '</p>';
+  return h + "</div>";
+}
+appearanceHTML = (function(orig){
+  return function(ch){ return statusHTML(ch) + orig(ch); };
+})(appearanceHTML);
+/* ---------- 追加ビューと履歴（修正45・46） ---------- */
+var XVIEW = null, SINGLE_TARGET = null, HIST = [], RESTORING = false;
+var XIDS = ["viewSingle", "viewTcr", "viewRel", "viewNosrc"];
+(function(){
+  var ab = document.getElementById("viewAbility");
+  ["viewSingle", "viewTcr", "viewRel", "viewNosrc"].forEach(function(id){
+    var s = document.createElement("section");
+    s.id = id; s.hidden = true;
+    document.body.appendChild(s);
+  });
+  var btn = document.createElement("button");
+  btn.type = "button"; btn.id = "backBtn"; btn.className = "backbtn-fixed"; btn.textContent = "← 戻る"; btn.style.display = "none";
+  btn.addEventListener("click", function(){ goBack(); });
+  document.body.appendChild(btn);
+})();
+function hideXViews(){ XIDS.forEach(function(id){ var e = document.getElementById(id); if(e) e.hidden = true; }); XVIEW = null; }
+function showXView(id){
+  for(var k in viewEls){ viewEls[k].hidden = true; tabBtns[k].setAttribute("aria-selected", "false"); }
+  hideXViews();
+  if(id){ var e = document.getElementById(id); if(e){ e.hidden = false; XVIEW = id; } }
+  window.scrollTo({ top: 0 });
+}
+function snapState(){ return { view: view, activeId: activeId, activeChara: activeChara, editActiveId: editActiveId, editChara: editChara, EP_SEL: EP_SEL, xview: XVIEW, single: SINGLE_TARGET }; }
+function pushHist(){ HIST.push(snapState()); if(HIST.length > 60) HIST.shift(); updateBackBtn(); }
+function updateBackBtn(){ var b = document.getElementById("backBtn"); if(b) b.style.display = HIST.length ? "" : "none"; }
+function goBack(){
+  var s = HIST.pop(); if(!s) return;
+  RESTORING = true;
+  activeId = s.activeId; activeChara = s.activeChara; editActiveId = s.editActiveId; editChara = s.editChara; EP_SEL = s.EP_SEL; SINGLE_TARGET = s.single;
+  render();
+  if(s.xview){ renderXView(s.xview); showXView(s.xview); } else { hideXViews(); setView(s.view); }
+  RESTORING = false;
+  updateBackBtn();
+}
+setView = (function(orig){
+  return function(v){ if(!RESTORING && (XVIEW || view !== v)) pushHist(); orig(v); hideXViews(); updateBackBtn(); };
+})(setView);
+/* 修正46：リンクの飛び先は単独ページ。修正47：最初から開いた状態で表示 */
+jumpTo = function(target){
+  if(!RESTORING) pushHist();
+  recordRecent(target);
+  OPENED[target] = 1;
+  SINGLE_TARGET = target;
+  renderSingle();
+  showXView("viewSingle");
+};
+function renderSingle(){
+  var el = document.getElementById("viewSingle");
+  var t = SINGLE_TARGET || "";
+  var parts = t.split(":");
+  var h = "";
+  if(parts[0] === "chara"){
+    var ch = null;
+    var cid = t.slice(6);
+    DATA.charas.forEach(function(c){ if(c._id === cid) ch = c; });
+    if(ch) h = charaPageHTML(ch, true, false, "");
+  } else if(parts[0] === "item"){
+    var cat = null;
+    DATA.cats.forEach(function(c){ if(c.id === parts[1]) cat = c; });
+    var title = parts.slice(2).join(":");
+    if(cat) cat.items.forEach(function(it){ if((it.title || "") === title) h = itemCard(cat, it, true, false); });
+  }
+  el.innerHTML = h ? '<div class="cards">' + h + "</div>" : '<div class="empty">項目が見つかりませんでした。</div>';
+}
+function renderXView(id){
+  if(id === "viewSingle") renderSingle();
+  else if(id === "viewTcr") renderTCR();
+  else if(id === "viewRel") renderRel();
+  else if(id === "viewNosrc") renderNosrc();
+}
+document.addEventListener("click", function(e){
+  var a = e.target.closest ? e.target.closest("[data-xview]") : null;
+  if(!a) return;
+  e.preventDefault();
+  if(!RESTORING) pushHist();
+  var id = a.getAttribute("data-xview");
+  renderXView(id);
+  showXView(id);
+});
+document.addEventListener("click", function(e){
+  var ep = e.target.closest ? e.target.closest("[data-ep]") : null;
+  if(ep && !RESTORING) pushHist();
+}, true);
+tabsEl.addEventListener("click", function(){ if(!RESTORING) pushHist(); }, true);
+tabsEditEl.addEventListener("click", function(){ if(!RESTORING) pushHist(); }, true);
+/* ---------- 修正43：タイプ・クラス・ランク表 ---------- */
+function tcrLink(val, kind){
+  if(!val || val === "未出") return esc(val || "未出");
+  return '<a class="namelink" data-jump="item:ability:' + esc(val + "（" + kind + "）") + '">' + esc(val) + "</a>";
+}
+function renderTCR(){
+  var el = document.getElementById("viewTcr");
+  var h = '<h3 class="cardtitle">全登場人物のタイプ・クラス・ランク</h3><div class="card"><table class="tcrtable"><tr><th>名前</th><th>タイプ</th><th>クラス</th><th>ランク</th><th>能力</th></tr>';
+  DATA.charas.forEach(function(ch){
+    if(chRank(ch.chapter == null ? 1 : ch.chapter) > chRank(displayChapter)) return;
+    var b = ch.badge || {};
+    var abCell = "未出";
+    if(b.ability && b.ability !== "未出"){
+      var key = rubyKeyOf(b.ability);
+      var ttl = key ? abilityItemTitle(key) : "";
+      abCell = ttl ? '<a class="namelink" data-jump="item:ability:' + esc(ttl) + '">' + esc(b.ability) + "</a>" : esc(b.ability);
+    }
+    h += "<tr><td>" + '<a class="namelink" data-jump="chara:' + esc(ch._id) + '">' + esc(ch.name) + "</a></td><td>" + tcrLink(b.type, "タイプ") + "</td><td>" + tcrLink(b.cls, "クラス") + "</td><td>" + tcrLink(b.rank, "ランク") + "</td><td>" + abCell + "</td></tr>";
+  });
+  h += "</table></div>" + '<p class="overall">名前・タイプ・クラス・ランク・能力を押すと、その項目のページへ移動します。</p>';
+  el.innerHTML = h;
+}
+/* ---------- キャラ相関図 ---------- */
+var REL_NODES = { "アルジェント・パーチェ": [46, 40], "エイリー": [46, 10], "アルジェント・リベロ": [12, 20], "アルジェント・プリート": [80, 14], "謎の子ども": [8, 44], "ジーナ": [14, 72], "カリーノ": [30, 92], "ドルヴィ・エルズバーグ": [58, 92], "エレナ・コリアス": [84, 44], "イザドラ・オーティス": [90, 64], "リーダー（襲撃者）": [66, 70], "イノ": [84, 86] };
+var REL_EDGES = [
+  ["アルジェント・パーチェ", "エイリー", "主人とメイド（旅の従者）"],
+  ["アルジェント・パーチェ", "アルジェント・リベロ", "親子（父）"],
+  ["アルジェント・パーチェ", "アルジェント・プリート", "親子（母）"],
+  ["アルジェント・リベロ", "アルジェント・プリート", "夫婦（コルトゥーラ国王夫妻）"],
+  ["アルジェント・パーチェ", "謎の子ども", "キャンディーを授かった"],
+  ["アルジェント・パーチェ", "ジーナ", "キスで能力『ちょっとお昼寝』をコピー"],
+  ["アルジェント・パーチェ", "カリーノ", "キスで能力『困った探偵鳥』をコピー"],
+  ["アルジェント・パーチェ", "ドルヴィ・エルズバーグ", "能力『絶望の終末』をコピー"],
+  ["アルジェント・パーチェ", "エレナ・コリアス", "『ビーバッグを絶対倒す』と小指で約束"],
+  ["アルジェント・パーチェ", "リーダー（襲撃者）", "城を襲撃された"],
+  ["エイリー", "アルジェント・リベロ", "幼い頃、川で流されていたところを助けられた"],
+  ["ドルヴィ・エルズバーグ", "アルジェント・プリート", "プリートの父の遠い親戚"],
+  ["リーダー（襲撃者）", "イノ", "同一人物（名前はイノ）"],
+  ["エレナ・コリアス", "イザドラ・オーティス", "セーレット国王とオーティス家"]
+];
+function renderRel(){
+  var el = document.getElementById("viewRel");
+  var idOf = {};
+  DATA.charas.forEach(function(c){ idOf[c.name] = c._id; });
+  var lines = REL_EDGES.map(function(e){
+    var a = REL_NODES[e[0]], b = REL_NODES[e[1]];
+    if(!a || !b) return "";
+    return '<line x1="' + a[0] + '" y1="' + a[1] + '" x2="' + b[0] + '" y2="' + b[1] + '" stroke="#cbb" stroke-width="0.5"/>';
+  }).join("");
+  var nodes = Object.keys(REL_NODES).map(function(n){
+    if(!idOf[n]) return "";
+    var p = REL_NODES[n];
+    return '<button type="button" class="relnode" style="left:' + p[0] + "%;top:" + p[1] + '%" data-jump="chara:' + esc(idOf[n]) + '">' + esc(n.replace("アルジェント・", "")) + "</button>";
+  }).join("");
+  var list = REL_EDGES.map(function(e){ return '<p class="overall">' + esc(e[0].replace("アルジェント・", "")) + " × " + esc(e[1].replace("アルジェント・", "")) + "：" + esc(e[2]) + "</p>"; }).join("");
+  el.innerHTML = '<h3 class="cardtitle">キャラ相関図</h3><div class="relwrap"><svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none" style="position:absolute;inset:0">' + lines + '</svg>' + nodes + "</div>" + list;
+}
+/* ---------- 出典なしリスト ---------- */
+function collectNosrc(){
+  var rows = [];
+  DATA.charas.forEach(function(ch){
+    ch.sections.forEach(function(sec){
+      visibleFacts(sec.facts).forEach(function(f){
+        if(!(f.s && f.s.length) && f.t.indexOf("未出") < 0) rows.push({ key: "chara:" + ch._id, label: ch.name, text: f.t });
+      });
+    });
+  });
+  DATA.cats.forEach(function(cat){
+    if(cat.kind === "chara") return;
+    cat.items.forEach(function(it){
+      if(!isItemVisible(it)) return;
+      if((it._id || "").indexOf("synopsis:overall") === 0) return;
+      [it.facts, it.basic, it.feat].forEach(function(list){
+        if(list) visibleFacts(list).forEach(function(f){
+          if(!(f.s && f.s.length) && f.t.indexOf("未出") < 0) rows.push({ key: "item:" + cat.id + ":" + (it.title || ""), label: it.title, text: f.t });
+        });
+      });
+    });
+  });
+  return rows;
+}
+function renderNosrc(){
+  var rows = collectNosrc();
+  var el = document.getElementById("viewNosrc");
+  el.innerHTML = '<h3 class="cardtitle">出典なしリスト（' + rows.length + '件）</h3><p class="overall">出典リンクが付いていない事実の一覧です（「未出」の項目は除いています）。</p>'
+    + (rows.length ? rows.map(function(r){ return '<p class="overall"><a class="namelink" data-jump="' + esc(r.key) + '">' + esc(r.label) + "</a>：" + richText(r.text) + "</p>"; }).join("") : '<p class="overall">出典のない事実はありません。</p>');
+}
+/* ---------- ユーティリティバーの差し込み ---------- */
+render = (function(orig){
+  return function(){
+    orig();
+    var bar = '<p class="overall utilbar"><a class="namelink" data-xview="viewTcr">📊 タイプ・クラス・ランク表</a>　<a class="namelink" data-xview="viewRel">🕸 キャラ相関図</a>　<a class="namelink" data-xview="viewNosrc">🔍 出典なしリスト</a></p>';
+    if(contentEl) contentEl.innerHTML = bar + contentEl.innerHTML;
+  };
+})(render);
+renderAbilities = (function(orig){
+  return function(){
+    orig();
+    abilityContentEl.innerHTML = '<p class="overall"><a class="namelink" data-xview="viewTcr">📊 全登場人物のタイプ・クラス・ランク表</a></p>' + abilityContentEl.innerHTML;
+  };
+})(renderAbilities);
+
 buildData();
 render();
 COMMITTED = snapshotState();
